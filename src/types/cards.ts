@@ -12,3 +12,13 @@ export type TCard = {
     image_large: string;
     __v: number;
 }
+
+export interface IBurgerIngridients {
+  cards: TCard[];
+  [s:string]: any;
+}
+
+export interface IBurgerConstructor {
+  cards: TCard[];
+  [s:string]: any;
+}

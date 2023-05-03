@@ -1,5 +1,4 @@
-import React, { FunctionComponent } from "react"
-import PropTypes from "prop-types"
+import React from "react"
 import BurgerConstructorStyles from "./BurgerConstructor.module.css"
 import Subtract from "../../images/Subtract.svg"
 import {
@@ -7,15 +6,10 @@ import {
   DragIcon,
   Button,
 } from "@ya.praktikum/react-developer-burger-ui-components"
-import { TCard } from "../../types/cards"
-import { data } from "../../utils/data"
+import { cardDefaultProps, cardPropsTypes } from "../../utils/prop-types"
 
-interface IBurgerConstructor {
-  cards: TCard[];
-  [s:string]: any;
-};
 
-const BurgerConstructor:FunctionComponent<IBurgerConstructor> = function ({cards}) {
+const BurgerConstructor = function ({cards}) {
   const [firstCard, ...unlockCards] = cards
   const lastCard = unlockCards.pop() ?? firstCard
   return (
@@ -32,11 +26,11 @@ const BurgerConstructor:FunctionComponent<IBurgerConstructor> = function ({cards
       </div>
 
       <ul className={BurgerConstructorStyles['ingridients__list']}>
-        {unlockCards.map((item:TCard) => {
+        {unlockCards.map((item) => {
             return (
                 <li 
-                  key={item._id} 
                   className={BurgerConstructorStyles['ingridient']} 
+                  key={item._id} 
                 >
                     <DragIcon type={"secondary"} />
                     <ConstructorElement 
@@ -72,27 +66,7 @@ const BurgerConstructor:FunctionComponent<IBurgerConstructor> = function ({cards
 };
 
 
-BurgerConstructor.defaultProps = {
-  cards: data,
-}
-
-BurgerConstructor.propTypes = {
-  // @ts-ignore
-  cards: PropTypes.arrayOf(
-    PropTypes.shape({
-      _id: PropTypes.string,
-      name: PropTypes.string,
-      type: PropTypes.string,
-      proteins: PropTypes.number,
-      fat: PropTypes.number,
-      carbohydrates: PropTypes.number,
-      calories: PropTypes.number, 
-      price: PropTypes.number,
-      image: PropTypes.string, 
-      image_mobile: PropTypes.string, 
-      image_large: PropTypes.string,
-      __v: PropTypes.number,
-  }))
-}
+BurgerConstructor.defaultProps = cardDefaultProps
+BurgerConstructor.propTypes = cardPropsTypes
 
 export default BurgerConstructor;

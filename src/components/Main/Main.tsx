@@ -7,7 +7,7 @@ const Main:FunctionComponent<TChildren> = ({children}) => {
     <main className={MainStyles.main}>
         {children}
     </main>
-  );
-};
+  )
+}
 
 export default Main;

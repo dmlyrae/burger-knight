@@ -1,24 +1,19 @@
-import React, { FunctionComponent } from "react"
-import PropTypes from "prop-types"
+import React from "react"
 import BurgerIngredientsStyles from "./BurgerIngredients.module.css"
 import { Tab, CurrencyIcon, Counter } from "@ya.praktikum/react-developer-burger-ui-components"
-import { data } from "../../utils/data"
-import { TCard } from "../../types/cards"
+import { cardDefaultProps, cardPropsTypes } from "../../utils/prop-types"
 
-
-interface IBurgerIngridients {
-  cards: TCard[];
-  [s:string]: any;
-};
-
-const IngridientsList = ({list,title}:{list:TCard[],title:string}) => (
+const IngridientsList = ({list,title}) => (
     <div className={BurgerIngredientsStyles['additional-ingridients__list_item']}>
       <h3 className={"text text_type_main-medium mb-6"}>
         {title}
       </h3>
       <ul className={BurgerIngredientsStyles['ingridients-list']}>
-        {list.map((card:TCard) => (
-          <li className={BurgerIngredientsStyles['additional-ingrigient']} key={card._id}>
+        {list.map((card) => (
+          <li 
+            className={BurgerIngredientsStyles['additional-ingrigient']} 
+            key={card._id}
+          >
             <Counter count={1} size="default" />
             <img
               className={BurgerIngredientsStyles['additional-ingridient__image']}
@@ -38,7 +33,7 @@ const IngridientsList = ({list,title}:{list:TCard[],title:string}) => (
     </div>
 )
 
-const BurgerIngredients:FunctionComponent<IBurgerIngridients> = function({cards}) {
+const BurgerIngredients = function({cards}) {
   const [activeTab, setActiveTab] = React.useState("bun")
 
   const buns = cards.filter((card) => card.type === "bun")
@@ -88,34 +83,15 @@ const BurgerIngredients:FunctionComponent<IBurgerIngridients> = function({cards}
             {list:buns,title:'Булки'},
             {list:mains,title:'Соусы'},
             {list:sauces,title:'Начинки'}
-          ].map((item:{list:TCard[],title:string}) => (
-            <IngridientsList {...item} />
+          ].map((item, i) => (
+            <IngridientsList {...item} key={i} />
           ))
         }
       </ul>
     </section>
   );
 };
-BurgerIngredients.defaultProps = {
-  cards: data,
-}
-BurgerIngredients.propTypes = {
-  // @ts-ignore
-  cards: PropTypes.arrayOf(
-    PropTypes.shape({
-      _id: PropTypes.string,
-      name: PropTypes.string,
-      type: PropTypes.string,
-      proteins: PropTypes.number,
-      fat: PropTypes.number,
-      carbohydrates: PropTypes.number,
-      calories: PropTypes.number, 
-      price: PropTypes.number,
-      image: PropTypes.string, 
-      image_mobile: PropTypes.string, 
-      image_large: PropTypes.string,
-      __v: PropTypes.number,
-  }))
-}
+BurgerIngredients.defaultProps = cardDefaultProps
+BurgerIngredients.propTypes = cardPropsTypes
 
 export default BurgerIngredients;
