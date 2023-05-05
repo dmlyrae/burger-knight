@@ -1,6 +1,5 @@
 import IngridientStyles from "./IngredientDetails.module.css";
 import { cardDefaultProps, cardProps } from "../../utils/prop-types"
-import PropTypes from "prop-types";
 
 const IngridientVocabulary = {
 	calories: 'Калорий, ккал',
@@ -43,8 +42,8 @@ const IngredientsDetails = ({data}) => {
 IngredientsDetails.defaultProps = {
 	data: cardDefaultProps[0]
 }
-IngredientsDetails.propTypes = PropTypes.shape({
+IngredientsDetails.propTypes = {
 	data: cardProps
-})
+}
 
 export default IngredientsDetails
