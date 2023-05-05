@@ -1,9 +1,8 @@
 import React from "react";
 import BurgerConstructor from "../components/BurgerConstructor/BurgerConstructor";
 import BurgerIngredients from "../components/BurgerIngredients/BurgerIngridients";
-import { data } from "../utils/data";
 
-const MainPage = function() {
+const MainPage = function({ data }) {
   return (
     <>
       <BurgerIngredients cards={data} />
@@ -12,4 +11,4 @@ const MainPage = function() {
   )
 }
 
-export default MainPage
+export default MainPage;

@@ -1,6 +1,12 @@
 import { TCard } from "../types/cards";
 
-export const data:[TCard, ...TCard[], TCard] = [
+export const apiUrl = "https://norma.nomoreparties.space/api/ingredients";
+
+export const orderDetailsData = {
+  number: 34536,
+}
+
+export const data: [TCard, ...TCard[], TCard] = [
   {
     _id: "60666c42cc7b410027a1a9b1",
     name: "Краторная булка N-200i",
@@ -123,8 +129,10 @@ export const data:[TCard, ...TCard[], TCard] = [
     calories: 986,
     price: 300,
     image: "https://code.s3.yandex.net/react/code/mineral_rings.png",
-    image_mobile: "https://code.s3.yandex.net/react/code/mineral_rings-mobile.png",
-    image_large: "https://code.s3.yandex.net/react/code/mineral_rings-large.png",
+    image_mobile:
+      "https://code.s3.yandex.net/react/code/mineral_rings-mobile.png",
+    image_large:
+      "https://code.s3.yandex.net/react/code/mineral_rings-large.png",
     __v: 0,
   },
   {
