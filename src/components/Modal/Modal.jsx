@@ -1,3 +1,4 @@
+import { useEffect } from "react"
 import ModalOverlay from "../ModalOverlay/ModalOverlay"
 import ModalStyles from "./Modal.module.css"
 import { createPortal } from "react-dom"
@@ -9,6 +10,15 @@ import PropTypes from "prop-types"
 const rootModal = document.getElementById("root-modal") 
 
 export const Modal = function({title, closeModal, children}) {
+
+    useEffect(() => {
+        const escapeListener = function(e) {
+            if (e.key === "Escape") closeModal()
+        }
+        document.addEventListener('keydown', escapeListener)
+        return () => document.removeEventListener('keydown', escapeListener)
+    }, [])
+
     return createPortal(
                 <ModalOverlay closeModal={closeModal}>
                     <div className={`${ModalStyles['modal-card']} p-10 pb-12`}>
