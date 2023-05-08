@@ -22,7 +22,7 @@ const IngredientElement = ({title, value}) => (
 
 IngredientElement.propTypes = {
 	title: PropTypes.string,
-	value: PropTypes.string,
+	value: PropTypes.oneOf([PropTypes.string, PropTypes.number])
 }
 
 const IngredientsDetails = ({data}) => {
