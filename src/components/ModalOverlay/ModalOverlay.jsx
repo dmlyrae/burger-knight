@@ -1,7 +1,7 @@
 import ModalOverlayStyles from './ModalOverlay.module.css'
 import PropTypes from "prop-types";
 
-export const ModalOverlay = function({closeModal,children}) {
+export const ModalOverlay = function({closeModal}) {
     const clickOnOverlay = (e) => {
         if (e.target === e.currentTarget) {
             closeModal()
@@ -11,9 +11,7 @@ export const ModalOverlay = function({closeModal,children}) {
         <div 
             className={ModalOverlayStyles.overlay}
             onClick={clickOnOverlay}
-        >
-            {children}
-        </div>
+        />
     )
 }
 

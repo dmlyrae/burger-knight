@@ -1,8 +1,8 @@
 import PropTypes from "prop-types";
-import { data } from "./data";
+import { defaultData } from "./data";
 
 export const cardDefaultProps = {
-  cards: data,
+  cards: defaultData,
 }
 
 export const cardProps = PropTypes.shape({

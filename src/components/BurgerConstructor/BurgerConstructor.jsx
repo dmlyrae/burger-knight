@@ -13,6 +13,8 @@ import { orderDetailsData } from "../../utils/data"
 
 const BurgerConstructor = function({ cards }) {
 
+	console.log('cards in burger', cards)
+
     const [firstCard, ...unlockCards] = cards
     const lastCard = unlockCards.pop() ?? firstCard
 

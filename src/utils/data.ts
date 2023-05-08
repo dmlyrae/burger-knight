@@ -1,12 +1,10 @@
-import { TCard } from "../types/cards";
-
-export const apiUrl = "https://norma.nomoreparties.space/api/ingredients";
+export const apiUrl = "https://norma.nomoreparties.space/api";
 
 export const orderDetailsData = {
   number: 34536,
 }
 
-export const data: [TCard, ...TCard[], TCard] = [
+export const defaultData  = [
   {
     _id: "60666c42cc7b410027a1a9b1",
     name: "Краторная булка N-200i",
