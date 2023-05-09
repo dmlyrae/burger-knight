@@ -1,0 +1,19 @@
+.content-wrapper {
+  max-width: 1280px; 
+  margin-left: auto;
+  margin-right: auto;
+  min-height: 100vh;
+  width: 100%;
+}
+
+@media screen and (max-width: 1240px) {
+  .content-wrapper {
+    max-width: 960px;
+  }
+}
+
+@media screen and (max-width: 960px) {
+  .content-wrapper {
+    max-width: 100%;
+  }
+}
