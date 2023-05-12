@@ -1,9 +1,10 @@
-import React, {useState, forwardRef, createRef} from "react";
+import React, {useState, forwardRef, createRef, useContext} from "react";
 import BurgerIngredientsStyles from "./BurgerIngredients.module.css"
 import { Tab, CurrencyIcon, Counter } from "@ya.praktikum/react-developer-burger-ui-components"
 import { cardDefaultProps, cardPropsTypes } from "../../utils/prop-types"
 import IngredientsDetails from "../IngredientDetails/IngredientDetails"
 import { Modal } from "../Modal/Modal"
+import { IngredientsContext } from "../../services/appContext";
 
 const IngridientsList = forwardRef((props,ref) => {
 	const {list,title,openIngridient} = props
@@ -45,7 +46,9 @@ const IngridientsList = forwardRef((props,ref) => {
 	)}
 )
 
-const BurgerIngredients = function({cards}) {
+const BurgerIngredients = function() {
+
+  	const { data: cards } = useContext(IngredientsContext)
 	const [activeTab, setActiveTab] = React.useState("bun")
 
 	const buns = cards.filter((card) => card.type === "bun")
@@ -137,6 +140,6 @@ const BurgerIngredients = function({cards}) {
 }
 
 BurgerIngredients.defaultProps = cardDefaultProps
-BurgerIngredients.propTypes = cardPropsTypes
+//BurgerIngredients.propTypes = cardPropsTypes
 
 export default BurgerIngredients;

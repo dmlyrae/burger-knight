@@ -5,8 +5,8 @@ import BurgerIngredients from "../components/BurgerIngredients/BurgerIngridients
 const MainPage = function({ data }) {
   return (
     <>
-      <BurgerIngredients cards={data} />
-      <BurgerConstructor cards={data} />
+      <BurgerIngredients />
+      <BurgerConstructor />
     </>
   )
 }
