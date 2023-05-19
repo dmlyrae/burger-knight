@@ -1,46 +1,31 @@
-import React, { useEffect, useState, useReducer } from "react"
 import Layout from "../Layout/Layout"
 import MainPage from "../../pages/MainPage"
 import ErrorPage from "../../pages/ErrorPage"
-import { getIngredients } from "../../utils/burger-api"
-import burgerReducer, { burgerInitialState } from "../../store/reducers/burgerReducer"
-import { BurgerContext, IngredientsContext } from '../../services/appContext'
-import { burgerActionsTypes } from "../../store/actions/burgerActions"
+import { useSelector, useDispatch} from "react-redux"
+import { useEffect } from "react"
+import { fetchIngredients } from "../../store/actions/ingredientsActions"
+import { createRandomBurger } from "../../store/actions/burgerActions"
 
 function App() {
-
-	const [data, setData] = useState([])
-	const [error, setError] = useState()
-	const [loading, setLoading] = useState(true)
-	const [burgerState, burgerDispatcher] = useReducer(burgerReducer, burgerInitialState)
-
+	const dispatch = useDispatch()
+	const {ingredients, ingredientsError, ingredientsLoading } = useSelector(state => state.ingredients)
 	useEffect(() => {
-		getIngredients()
-			.then(({data, error}) => {
-				setError(error)
-				burgerDispatcher({
-					type: burgerActionsTypes.SET_INGREDIENTS_LIST,
-					payload: data, 
-				})
-				setData(data)
-				setLoading(false)
-			})
-	}, [])
-
+		dispatch(fetchIngredients())
+	},[])
+	useEffect(() => {
+		if (ingredients.length === 0) return;
+		dispatch(createRandomBurger(ingredients))
+	},[ingredients])
 	return (
-		<IngredientsContext.Provider value={{ data }}>
-			<BurgerContext.Provider value={{ burgerState, burgerDispatcher }}>
-				<Layout>
-				{
-					error ? (
-						<ErrorPage errorMessage={error} />
-					) : (
-						(loading || data.length === 0) ? (<>{'Loading...'}</>) : (<MainPage data={data} />)
-					)
-				}
-				</Layout>
-			</BurgerContext.Provider>
-		</IngredientsContext.Provider>
+		<Layout>
+			{
+				ingredientsError ? (
+					<ErrorPage errorMessage={ingredientsError} />
+				) : (
+					(ingredientsLoading || ingredients.length === 0) ? (<>{'Loading...'}</>) : (<MainPage data={ingredients} />)
+				)
+			}
+		</Layout>
 	)
 }
 

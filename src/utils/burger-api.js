@@ -14,7 +14,7 @@ export const getIngredients = function() {
         .catch((error) => ({data: [], error: (error.message ?? "Unknown error")}))
 }
 
-export const fillOrder = function(order) {
+export const sendOrderFetch = function(order) {
     return fetch(`${apiUrl}/orders`, {
             method: 'POST',
             headers: {

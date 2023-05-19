@@ -18,6 +18,7 @@ export const cardProps = PropTypes.shape({
       image_mobile: PropTypes.string,
       image_large: PropTypes.string,
       __v: PropTypes.number,
+      id: PropTypes.number,
 })
 
 export const cardPropsTypes = {

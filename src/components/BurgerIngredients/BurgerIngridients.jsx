@@ -1,13 +1,60 @@
-import React, {useState, forwardRef, createRef, useContext} from "react";
+import React, {forwardRef, createRef, useRef} from "react";
 import BurgerIngredientsStyles from "./BurgerIngredients.module.css"
 import { Tab, CurrencyIcon, Counter } from "@ya.praktikum/react-developer-burger-ui-components"
-import { cardDefaultProps, cardPropsTypes } from "../../utils/prop-types"
+import { cardDefaultProps, cardProps } from "../../utils/prop-types"
 import IngredientsDetails from "../IngredientDetails/IngredientDetails"
 import { Modal } from "../Modal/Modal"
-import { IngredientsContext } from "../../services/appContext";
+import { useDispatch, useSelector } from "react-redux";
+import { ingredientToggleWindow, setIngredient } from "../../store/actions/singleIngredientActions";
+import PropTypes from 'prop-types';
+import { useDrag } from "react-dnd";
+
+
+const Ingredient = (props) => {
+	const {openIngredient,card} = props;
+	const [{isDrag},dragRef] = useDrag({
+		type: card.type,
+		item: {
+			id: card._id,
+		}, 
+		collect: (monitor) => ({
+			isDrag: monitor.isDragging,
+		})
+	})
+	return (
+		<li 
+			className={BurgerIngredientsStyles['additional-ingrigient']} 
+			onClick={(e) => {
+				e.stopPropagation()
+				openIngredient(card)
+			}}
+			ref={dragRef}
+			draggable
+		>
+			<Counter count={1} size="default" />
+			<img
+				className={BurgerIngredientsStyles['additional-ingridient__image']}
+				alt="ingridient"
+				src={card.image}
+			/>
+			<div className={BurgerIngredientsStyles['additional-ingridient__price']}>
+				<p className="text text_type_digits-default">{card.price}</p>
+				<CurrencyIcon type="primary" />
+			</div>
+			<p className={`${BurgerIngredientsStyles['additional-ingridient__name']} text text_type_main-default`}>
+				{card.name}
+			</p>
+		</li>
+	)
+}
+
+Ingredient.propTypes = {
+	card: cardProps,
+	openIngredient: PropTypes.func,
+}
 
 const IngridientsList = forwardRef((props,ref) => {
-	const {list,title,openIngridient} = props
+	const {list,title,openIngredient} = props
 	return (
 		<div 
 			className={BurgerIngredientsStyles['additional-ingridients__list_item']}
@@ -18,42 +65,30 @@ const IngridientsList = forwardRef((props,ref) => {
 			</h3>
 			<ul className={BurgerIngredientsStyles['ingridients-list']}>
 				{list.map((card) => (
-					<li 
-						className={BurgerIngredientsStyles['additional-ingrigient']} 
-						key={card._id}
-						onClick={(e) => {
-							e.stopPropagation()
-							openIngridient(card)
-						}}
-					>
-						<Counter count={1} size="default" />
-						<img
-							className={BurgerIngredientsStyles['additional-ingridient__image']}
-							alt="ingridient"
-							src={card.image}
-						/>
-						<div className={BurgerIngredientsStyles['additional-ingridient__price']}>
-							<p className="text text_type_digits-default">{card.price}</p>
-							<CurrencyIcon type="primary" />
-						</div>
-						<p className={`${BurgerIngredientsStyles['additional-ingridient__name']} text text_type_main-default`}>
-							{card.name}
-						</p>
-					</li>
+					<Ingredient card={card} openIngredient={openIngredient} key={card._id} />
 				))}
 			</ul>
 		</div>
 	)}
 )
 
+IngridientsList.propTypes = {
+	list: PropTypes.arrayOf(cardProps),
+	title: PropTypes.string,
+	openIngredient: PropTypes.func,
+}
+
 const BurgerIngredients = function() {
 
-  	const { data: cards } = useContext(IngredientsContext)
-	const [activeTab, setActiveTab] = React.useState("bun")
+	const dispatch = useDispatch()
 
-	const buns = cards.filter((card) => card.type === "bun")
-	const mains = cards.filter((card) => card.type === "main")
-	const sauces = cards.filter((card) => card.type === "sauce")
+	const { ingredients } = useSelector(state => state.ingredients)
+	const { ingredientDetailsModalWindow } = useSelector(state => state.singleIngredient)
+	const [ activeTab,setActiveTab ] = React.useState("bun")
+
+	const buns = ingredients.filter((card) => card.type === "bun")
+	const mains = ingredients.filter((card) => card.type === "main")
+	const sauces = ingredients.filter((card) => card.type === "sauce")
 	const rootListRef = createRef(null)
 
 	const ingridientsLists = { 
@@ -67,16 +102,29 @@ const BurgerIngredients = function() {
 		if (list) {
 			const rootList = rootListRef.current
 			rootList.scrollTop = list.offsetTop
-			/*list.scrollIntoView({
-				behavior: 'smooth',
-			})*/
 		}
 	}
-	const [modalDisplay, setModalDisplay] = useState(false)
-	const [modalData, setModalData] = useState(undefined)
 	const toggleModalDisplay = (data) => {
-		if (data) setModalData(data)
-		setModalDisplay((display) => !display)
+		if (data) {
+	  		dispatch(setIngredient(data)) 
+		} 
+		dispatch(ingredientToggleWindow())
+	}
+
+	const scrollHandler = (evt) => {
+		if (evt.currentTarget && rootListRef.current ) { 
+			const parentOffset = rootListRef.current.getBoundingClientRect().top
+			const listsOffset = Object.keys(ingridientsLists)
+				.map(listName => {
+					const listElement = ingridientsLists[listName]['ref']['current'];
+					return {
+						listName, 
+						offset: Math.abs(listElement.getBoundingClientRect().top - parentOffset)
+					} 
+				})
+				.sort((a,b) => a.offset - b.offset)
+			setActiveTab(listsOffset[0]['listName'])
+		}
 	}
 
 	return (
@@ -113,6 +161,7 @@ const BurgerIngredients = function() {
 			<ul 
 				className={BurgerIngredientsStyles['additional-ingridients__list']}
 				ref={rootListRef}
+				onScroll={scrollHandler}
 			>
 				{
 					Object.keys(ingridientsLists).map((key,i) => (
@@ -120,7 +169,7 @@ const BurgerIngredients = function() {
 							title={ingridientsLists[key]['title']}
 							list={ingridientsLists[key]['list']}
 							key={i} 
-							openIngridient={toggleModalDisplay} 
+							openIngredient={toggleModalDisplay} 
 							ref={ingridientsLists[key]['ref']}
 						/>
 					))
@@ -128,9 +177,9 @@ const BurgerIngredients = function() {
 			</ul>
 
 			{
-				modalDisplay && (
+				ingredientDetailsModalWindow && (
 						<Modal title={'Детали ингридиента'} closeModal={toggleModalDisplay}>
-							<IngredientsDetails data={modalData} />
+							<IngredientsDetails />
 						</Modal>
 					)
 			}
@@ -140,6 +189,5 @@ const BurgerIngredients = function() {
 }
 
 BurgerIngredients.defaultProps = cardDefaultProps
-//BurgerIngredients.propTypes = cardPropsTypes
 
 export default BurgerIngredients;

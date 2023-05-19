@@ -1,4 +1,4 @@
-import React, {useState, useContext, useMemo} from "react"
+import React, { useMemo, useRef } from "react"
 import BurgerConstructorStyles from "./BurgerConstructor.module.css"
 import Subtract from "../../images/Subtract.svg"
 import {
@@ -6,20 +6,100 @@ import {
 	DragIcon,
 	Button,
 } from "@ya.praktikum/react-developer-burger-ui-components"
-import { cardDefaultProps, cardPropsTypes } from "../../utils/prop-types"
+import { cardDefaultProps, cardProps } from "../../utils/prop-types"
 import { Modal } from "../Modal/Modal"
 import OrderDetails from "../OrderDetails/OrderDetails"
-import { BurgerContext } from '../../services/appContext'
-import { burgerActionsTypes } from "../../store/actions/burgerActions"
-import { fillOrder } from "../../utils/burger-api"
+import { useDispatch,useSelector } from "react-redux"
+import { sendOrderAction, toggleOrderModal } from "../../store/actions/orderActions"
+import { addIngredient, changeOrderIngredients, removeIngredientAction } from "../../store/actions/burgerActions"
+import { useDrag, useDrop } from "react-dnd"
+import PropTypes from "prop-types"
+
+
+const BurgerIngredient = ({item,index}) => {
+
+ 	const ingredientRef = useRef(null)
+	const dispatch = useDispatch()
+
+  	const [{ handlerId,isOver}, dropRef] = useDrop({
+    	accept: 'burgerIngredient',
+    	collect: monitor => ({
+        	handlerId: monitor.getHandlerId(),
+			isOver: !!monitor.isOver(),
+		}),
+		drop(item) {
+      		if (!ingredientRef.current) { return; }
+			const dragIndex = item.index
+			const dropIndex = index
+			if (dragIndex === dropIndex) {
+				return
+			}
+			dispatch(changeOrderIngredients(dragIndex, dropIndex))
+			return;
+		},
+	})
+
+	const [{ isDragging }, dragRef] = useDrag({
+		type: 'burgerIngredient',
+		item:  { index } ,
+		collect: monitor => ({
+			isDragging: monitor.isDragging(),
+		}),
+	})
+
+  	dragRef(dropRef(ingredientRef))
+
+	const removeIngredient = (ingredientNumber) => {
+		dispatch(removeIngredientAction(ingredientNumber))
+	}
+
+	return (
+		<li
+			className={BurgerConstructorStyles["ingridient"]}
+			data-handler-id={handlerId}
+			ref={ingredientRef}
+			style={{
+				display: isDragging ? 'none': 'block',
+				paddingTop: isOver ? 60 : 0,
+			}}
+			draggable
+		>
+			<DragIcon 
+				type={"secondary"} 
+			/>
+			<ConstructorElement
+				thumbnail={item.image}
+				price={item.price}
+				text={item.name}
+				handleClose={function() {
+					removeIngredient(index)
+				}}
+			/>
+		</li>
+	)
+}
+
+BurgerIngredient.propTypes = {
+	item: cardProps,
+	index: PropTypes.number,
+}
 
 const BurgerConstructor = function() {
 
-	const [modalDisplay, setModalDisplay] = useState(false)
-  	const { burgerState, burgerDispatcher } = useContext(BurgerContext)
+	const [{}, dropAreaRef] = useDrop({
+        accept: ['bun', 'sauce', 'main'],
+		drop: (item) => {
+			const addedIngredient = ingredients.find((ingredient) => ingredient._id === item.id );
+			dispatch(addIngredient(addedIngredient))
+		},
+    });
+	const dispatch = useDispatch()
+  	const { burgerIngredients, totalPrice } = useSelector(state => state.burgerConstructor)
+	const { ingredients } = useSelector(state => state.ingredients)
+	const { orderModalOpen } = useSelector(state => state.order)
 
 	const {bun, innerIngredients} = useMemo(() => {
-		return burgerState.ingredients.reduce((separatedIngredients,ingredient) => {
+		return burgerIngredients.reduce((separatedIngredients,ingredient) => {
 			if (ingredient.type === 'bun') {
 				separatedIngredients.bun = ingredient
 			} else {
@@ -27,32 +107,15 @@ const BurgerConstructor = function() {
 			}
 			return separatedIngredients
 		}, {bun: null, innerIngredients: []})
-	}, [burgerState.ingredients])
+	}, [burgerIngredients])
 
-	const removeIngredient = (ingredientId) => {
-		burgerDispatcher({
-			type: burgerActionsTypes.REMOVE_INGREDIENT,
-			payload: ingredientId,
-		})
-	}
 
 	const toggleModalDisplay = () => {
-		setModalDisplay((display) => !display)
+		dispatch(toggleOrderModal())
 	}
 
 	const sendOrder = () => {
-		const ingredients = burgerState.ingredients.reduce((list,ingredient) => [...list, ingredient._id], [])
-		fillOrder({ingredients})
-			.then(({data, error}) => {
-				burgerDispatcher({
-					type: burgerActionsTypes.FILL_ORDER,
-					payload: {
-						...data,
-						error
-					}, 
-				})
-				toggleModalDisplay()
-			})
+		dispatch(sendOrderAction(burgerIngredients))
 	}
 
 	return (
@@ -66,32 +129,22 @@ const BurgerConstructor = function() {
 						price={bun.price}
 						thumbnail={bun.image}
 						type="top"
-						handleClose={function(){
-							removeIngredient(bun.id)
-						}}
 					/>
 				}
 			</div>
 
-			<ul className={BurgerConstructorStyles["ingridients__list"]}>
-				{innerIngredients.map((item) => {
-					return (
-						<li
-							className={BurgerConstructorStyles["ingridient"]}
-							key={item._id}
-						>
-							<DragIcon type={"secondary"} />
-							<ConstructorElement
-								thumbnail={item.image}
-								price={item.price}
-								text={item.name}
-								handleClose={function() {
-									removeIngredient(item._id)
-								}}
-							/>
-						</li>
-					);
-				})}
+			<ul 
+				className={BurgerConstructorStyles["ingridients__list"]}
+				ref={dropAreaRef}
+			>
+				{innerIngredients.map((item,i) => (
+						<BurgerIngredient 
+							item={item} 
+							key={i + 1} 
+							index={i + 1} 
+						/>
+					)
+				)}
 			</ul>
 
 			<div className={`${BurgerConstructorStyles["ingridient"]} ml-8 mb-10`}>
@@ -102,9 +155,6 @@ const BurgerConstructor = function() {
 						price={bun.price}
 						thumbnail={bun.image}
 						type="bottom"
-						handleClose={function(){
-							removeIngredient(bun.id)
-						}}
 					/>
 				}
 			</div>
@@ -112,7 +162,7 @@ const BurgerConstructor = function() {
 			<div className={BurgerConstructorStyles["ingridients__info"]}>
 				<div className={BurgerConstructorStyles.price__group}>
 					<p className="text text_type_digits-medium">
-						{burgerState.totalPrice}
+						{totalPrice}
 					</p>
 					<img src={Subtract} alt="" />
 				</div>
@@ -127,9 +177,9 @@ const BurgerConstructor = function() {
 			</div>
 
 			{
-				modalDisplay && (
+				orderModalOpen && (
 						<Modal title={''} closeModal={toggleModalDisplay}>
-							<OrderDetails data={burgerState.orderDetails} />
+							<OrderDetails />
 						</Modal>
 					)
 			}

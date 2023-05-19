@@ -1,24 +1,27 @@
 import OrderDetailsStyles from "./OrderDetails.module.css"
 import done from "../../images/Done.svg"
-import PropTypes from "prop-types"
+import { useSelector } from "react-redux"
 
 const validateOrderNumber = (orderNumber) => {
     const result = orderNumber.toString() 
     return Array(6 - result.length).fill('0').join('') + result
 }
 
-const OrderDetails = ({data}) => {
+const OrderDetails = () => {
+
+  	const { orderDetails, orderSendError } = useSelector(state => state.order)
+
     return (
         <section className={OrderDetailsStyles["order-details"]}>
             {
-                data.error ? (
+                orderSendError ? (
                     <h2 className={`${OrderDetailsStyles["order__number"]} text text_type_digits-large mt-4`}>
-                        {data.error}
+                        {orderSendError}
                     </h2>
                 ) : (
                     <>
                         <h2 className={`${OrderDetailsStyles["order__number"]} text text_type_digits-large mt-4`}>
-                            {validateOrderNumber(data.order.number)}
+                            {validateOrderNumber(orderDetails.order.number)}
                         </h2>
                         <p className="text text_type_main-medium mt-8">
                             идентификатор заказа
@@ -41,14 +44,4 @@ const OrderDetails = ({data}) => {
     )
 }
 
-OrderDetails.propTypes = {
-    data: PropTypes.shape({
-        order: PropTypes.shape({
-            number: PropTypes.number.isRequired 
-        }).isRequired,
-        name: PropTypes.string,
-        error: PropTypes.any,
-    })
-}
-
-export default OrderDetails;
+export default OrderDetails
