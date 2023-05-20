@@ -1,6 +1,6 @@
 import IngridientStyles from "./IngredientDetails.module.css";
-import { cardDefaultProps, cardProps } from "../../utils/prop-types"
 import PropTypes from "prop-types";
+import { useSelector } from "react-redux";
 
 const IngredientVocabulary = {
 	calories: 'Калорий, ккал',
@@ -22,35 +22,27 @@ const IngredientElement = ({title, value}) => (
 
 IngredientElement.propTypes = {
 	title: PropTypes.string,
-	value: PropTypes.oneOf([PropTypes.string, PropTypes.number])
+	value: PropTypes.number,
 }
 
-const IngredientsDetails = ({data}) => {
-	const {calories,proteins,fat,carbohydrates} = data
-	return (
-		  <div className={IngridientStyles["ingredient-details"]}>
-			   <img
-					src={data.image_large}
-					alt=""
+const IngredientsDetails = () => {
+	const { ingredientDetails } = useSelector(store => store.singleIngredient);
+	return ingredientDetails && (
+			<div className={IngridientStyles["ingredient-details"]}>
+				<img
+					src={ingredientDetails.image_large}
+					alt={`Here depicted delicious burger ingredient: ${ingredientDetails.name}.`}
 					className={IngridientStyles["ingredient-details__image"]}
-			   />
-			   <h2 className="text text_type_main-medium mt-4 mb-8">{data.name}</h2>
-			   <section className={IngridientStyles["ingredient-details__section-info"]}>
-					<IngredientElement value={calories} title={'calories'} />
-					<IngredientElement value={proteins} title={'proteins'} />
-					<IngredientElement value={fat} title={'fat'} />
-					<IngredientElement value={carbohydrates} title={'carbohydrates'} />
-			   </section>
-		  </div>
-	 )
-}
-
-IngredientsDetails.defaultProps = {
-	data: cardDefaultProps[0]
-}
-
-IngredientsDetails.propTypes = {
-	data: cardProps
+				/>
+				<h2 className="text text_type_main-medium mt-4 mb-8">{ingredientDetails.name}</h2>
+				<section className={IngridientStyles["ingredient-details__section-info"]}>
+					<IngredientElement value={ingredientDetails.calories ?? 0} title={'calories'} />
+					<IngredientElement value={ingredientDetails.proteins ?? 0} title={'proteins'} />
+					<IngredientElement value={ingredientDetails.fat ?? 0} title={'fat'} />
+					<IngredientElement value={ingredientDetails.carbohydrates ?? 0} title={'carbohydrates'} />
+				</section>
+			</div>
+		)
 }
 
 export default IngredientsDetails

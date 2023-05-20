@@ -61,6 +61,7 @@ section.additional-ingridients {
   width: 100%;
   flex-direction: column;
   justify-content: center;
+  cursor: grab;
 }
 .additional-ingridient__container {
   display: flex;

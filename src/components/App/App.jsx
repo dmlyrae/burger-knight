@@ -1,37 +1,32 @@
-import React, { useEffect, useState } from "react"
 import Layout from "../Layout/Layout"
 import MainPage from "../../pages/MainPage"
 import ErrorPage from "../../pages/ErrorPage"
-import { getIngredients } from "../../utils/burger-api"
+import { useSelector, useDispatch} from "react-redux"
+import { useEffect } from "react"
+import { fetchIngredients } from "../../store/actions/ingredientsActions"
+import Loader from "../Loader/Loader"
 
 function App() {
-
-	const [data, setData] = useState([])
-	const [error, setError] = useState()
-	const [loading, setLoading] = useState(true)
-
+	const dispatch = useDispatch()
+	const {ingredients, ingredientsError, ingredientsLoading } = useSelector(state => state.ingredients)
 	useEffect(() => {
-		getIngredients()
-			.then(({ingredients, error}) => {
-				setError(error)
-				setData(ingredients)
-				setLoading(false)
-			})
-	}, [])
-
+		dispatch(fetchIngredients())
+	},[])
 	return (
 		<Layout>
-		{
-			error ? (
-				<ErrorPage errorMessage={error} />
-			) : (
-				(loading || data.length === 0) ? (<>{'Loading...'}</>) : (<MainPage data={data} />)
-			)
-		}
+			{
+				ingredientsError ? (
+					<ErrorPage errorMessage={ingredientsError} />
+				) : (
+					(ingredientsLoading || ingredients.length === 0) ? (
+						<Loader size={'large'} loaderType={'spinner'} />
+					) : (
+						<MainPage />
+					)
+				)
+			}
 		</Layout>
 	)
 }
-
-App.propTypes = {}
 
 export default App

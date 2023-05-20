@@ -1,15 +1,32 @@
-import { checkResponse } from "./check-response"
 import { apiUrl } from "./data"
 
+const checkResponse = (response) => {
+    if (response.ok) return response.json()
+    return response.json().then(() => {
+        //Promise.reject(`Error: ${response.status}.`);
+        throw Error('Response error: ' + response.status)
+    })
+}
 
 const validateResponse = (res) => {
-    if (res.data) return {ingredients: res.data, error: false}
-    return {ingredients: [], error: 'Bad response'}
+    if (res.success) return res.data ?? res;
+    throw Error('Bad response.')
+    //Promise.reject(`Bad Response.`);
 }
 
-export const getIngredients = function() {
-    return fetch(`${apiUrl}/ingredients`)
+const request = (action, options) => {
+    return fetch(`${apiUrl}/${action}`, options)
         .then(checkResponse)
         .then(validateResponse)
-        .catch((error) => ({ingredients: [], error: (error.message ?? "Unknown error")}))
 }
+
+
+export const sendOrderFetch = (order) => request('orders', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(order)
+})
+
+export const getIngredients = () => request('ingredients');
