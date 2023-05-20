@@ -4,7 +4,7 @@ import ErrorPage from "../../pages/ErrorPage"
 import { useSelector, useDispatch} from "react-redux"
 import { useEffect } from "react"
 import { fetchIngredients } from "../../store/actions/ingredientsActions"
-import { createRandomBurger } from "../../store/actions/burgerActions"
+import Loader from "../Loader/Loader"
 
 function App() {
 	const dispatch = useDispatch()
@@ -12,17 +12,17 @@ function App() {
 	useEffect(() => {
 		dispatch(fetchIngredients())
 	},[])
-	useEffect(() => {
-		if (ingredients.length === 0) return;
-		dispatch(createRandomBurger(ingredients))
-	},[ingredients])
 	return (
 		<Layout>
 			{
 				ingredientsError ? (
 					<ErrorPage errorMessage={ingredientsError} />
 				) : (
-					(ingredientsLoading || ingredients.length === 0) ? (<>{'Loading...'}</>) : (<MainPage data={ingredients} />)
+					(ingredientsLoading || ingredients.length === 0) ? (
+						<Loader size={'large'} loaderType={'spinner'} />
+					) : (
+						<MainPage />
+					)
 				)
 			}
 		</Layout>

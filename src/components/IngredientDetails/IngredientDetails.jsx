@@ -31,7 +31,7 @@ const IngredientsDetails = () => {
 			<div className={IngridientStyles["ingredient-details"]}>
 				<img
 					src={ingredientDetails.image_large}
-					alt=""
+					alt={`Here depicted delicious burger ingredient: ${ingredientDetails.name}.`}
 					className={IngridientStyles["ingredient-details__image"]}
 				/>
 				<h2 className="text text_type_main-medium mt-4 mb-8">{ingredientDetails.name}</h2>

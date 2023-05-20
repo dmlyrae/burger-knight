@@ -1,4 +1,4 @@
-import React, {forwardRef, createRef, useRef} from "react";
+import React, {forwardRef, createRef, useRef, useMemo} from "react";
 import BurgerIngredientsStyles from "./BurgerIngredients.module.css"
 import { Tab, CurrencyIcon, Counter } from "@ya.praktikum/react-developer-burger-ui-components"
 import { cardDefaultProps, cardProps } from "../../utils/prop-types"
@@ -11,7 +11,14 @@ import { useDrag } from "react-dnd";
 
 
 const Ingredient = (props) => {
-	const {openIngredient,card} = props;
+	const { openIngredient,card } = props;
+  	const { burgerIngredients } = useSelector(state => state.burgerConstructor)
+	const ingredientAmount = useMemo(() => {
+		return burgerIngredients.reduce((amount,ingredient) => {
+			return ingredient._id === card._id ? amount + 1 : amount;
+		}, 0)
+	}, [burgerIngredients])
+	
 	const [{isDrag},dragRef] = useDrag({
 		type: card.type,
 		item: {
@@ -31,10 +38,12 @@ const Ingredient = (props) => {
 			ref={dragRef}
 			draggable
 		>
-			<Counter count={1} size="default" />
+			{Boolean(ingredientAmount) && (
+				<Counter count={ingredientAmount} size="default" />
+			)}
 			<img
 				className={BurgerIngredientsStyles['additional-ingridient__image']}
-				alt="ingridient"
+				alt={`Here we depict the most delicious ingredient for your burger: ${card.name}.`}
 				src={card.image}
 			/>
 			<div className={BurgerIngredientsStyles['additional-ingridient__price']}>

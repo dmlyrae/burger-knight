@@ -11,17 +11,17 @@ export function fetchIngredients() {
     dispatch({
         type: ingredientsActionsTypes.FETCH_INGREDIENTS_REQUEST
     })
-    const {data, error} = await getIngredients();
-    if (error) {
+    try {
+      const data = await getIngredients();
+      dispatch({
+          type: ingredientsActionsTypes.FETCH_INGREDIENTS_SUCCESS,
+          payload: data,
+      })
+    } catch (e) {
         dispatch({
           type: ingredientsActionsTypes.FETCH_INGREDIENTS_ERROR,
-          payload: error,
+          payload: e.message,
         })
-        return;
     }
-    dispatch({
-        type: ingredientsActionsTypes.FETCH_INGREDIENTS_SUCCESS,
-        payload: data,
-    })
   }
 } 

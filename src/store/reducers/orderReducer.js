@@ -37,6 +37,7 @@ export const orderReducer = (state = initialState, action) => {
           name: action.payload.name,
           order: action.payload.order,
         },
+        orderSend: false,
         orderSendError: false,
         orderModalOpen: true,
       }

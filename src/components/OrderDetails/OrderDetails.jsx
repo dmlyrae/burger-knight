@@ -29,7 +29,7 @@ const OrderDetails = () => {
                         <img 
                             className={OrderDetailsStyles["order__image"]} 
                             src={done} 
-                            alt={'done'}
+                            alt={'Order done'}
                         />
                         <p className={`${OrderDetails["order__desktop"]} text text_type_main-default`}>
                             Ваш заказ начали готовить

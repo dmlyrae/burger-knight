@@ -14,37 +14,43 @@ import { sendOrderAction, toggleOrderModal } from "../../store/actions/orderActi
 import { addIngredient, changeOrderIngredients, removeIngredientAction } from "../../store/actions/burgerActions"
 import { useDrag, useDrop } from "react-dnd"
 import PropTypes from "prop-types"
-
+import { v4 as uuidv4 } from 'uuid'
+import Loader from "../Loader/Loader"
 
 const BurgerIngredient = ({item,index}) => {
 
  	const ingredientRef = useRef(null)
 	const dispatch = useDispatch()
 
-  	const [{ handlerId,isOver}, dropRef] = useDrop({
+  	const [{ handlerId,draggingItem}, dropRef] = useDrop({
     	accept: 'burgerIngredient',
     	collect: monitor => ({
         	handlerId: monitor.getHandlerId(),
 			isOver: !!monitor.isOver(),
+			draggingItem: monitor.getItem(),
 		}),
-		drop(item) {
-      		if (!ingredientRef.current) { return; }
-			const dragIndex = item.index
-			const dropIndex = index
-			if (dragIndex === dropIndex) {
-				return
-			}
-			dispatch(changeOrderIngredients(dragIndex, dropIndex))
-			return;
-		},
+		hover: (item,monitor) => {
+      		if (!ingredientRef.current) return;
+			const dragIndex = item.index;
+			const hoverIndex = index;
+			if (dragIndex === hoverIndex) return;
+
+			const hoverBoundingRect = ingredientRef.current?.getBoundingClientRect();
+			const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
+			const clientOffset = monitor.getClientOffset();
+			const hoverClientY = clientOffset.y - hoverBoundingRect.top;
+
+			if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) return;
+			if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) return;
+
+			dispatch(changeOrderIngredients(dragIndex, hoverIndex))
+			item.index = hoverIndex;
+		}
 	})
 
-	const [{ isDragging }, dragRef] = useDrag({
+	const [ , dragRef] = useDrag({
 		type: 'burgerIngredient',
-		item:  { index } ,
-		collect: monitor => ({
-			isDragging: monitor.isDragging(),
-		}),
+		item: () => ({ id: item.key, index }),
 	})
 
   	dragRef(dropRef(ingredientRef))
@@ -59,8 +65,7 @@ const BurgerIngredient = ({item,index}) => {
 			data-handler-id={handlerId}
 			ref={ingredientRef}
 			style={{
-				display: isDragging ? 'none': 'block',
-				paddingTop: isOver ? 60 : 0,
+				opacity: (draggingItem && draggingItem.id === item.key )  ? 0.1 : 1,
 			}}
 			draggable
 		>
@@ -89,14 +94,15 @@ const BurgerConstructor = function() {
 	const [{}, dropAreaRef] = useDrop({
         accept: ['bun', 'sauce', 'main'],
 		drop: (item) => {
-			const addedIngredient = ingredients.find((ingredient) => ingredient._id === item.id );
+			const addedIngredient = structuredClone(ingredients.find((ingredient) => ingredient._id === item.id ));
+			addedIngredient.key = uuidv4()
 			dispatch(addIngredient(addedIngredient))
 		},
     });
 	const dispatch = useDispatch()
   	const { burgerIngredients, totalPrice } = useSelector(state => state.burgerConstructor)
 	const { ingredients } = useSelector(state => state.ingredients)
-	const { orderModalOpen } = useSelector(state => state.order)
+	const { orderModalOpen, orderSend } = useSelector(state => state.order)
 
 	const {bun, innerIngredients} = useMemo(() => {
 		return burgerIngredients.reduce((separatedIngredients,ingredient) => {
@@ -115,12 +121,17 @@ const BurgerConstructor = function() {
 	}
 
 	const sendOrder = () => {
+		if (!bun) return;
 		dispatch(sendOrderAction(burgerIngredients))
 	}
 
 	return (
 		<section className={BurgerConstructorStyles["ingridients"]}>
-
+			{!burgerIngredients.length && (
+				<h3 className={`text text_type_main-medium mt-2 text_color_inactive`}>
+					Пожалуйста, перенесите сюда булку и ингредиенты для создания заказа.
+				</h3>
+			)}
 			<div className={`${BurgerConstructorStyles["ingridient"]} ml-8 mb-4`}>
 				{
 					bun && <ConstructorElement
@@ -129,6 +140,7 @@ const BurgerConstructor = function() {
 						price={bun.price}
 						thumbnail={bun.image}
 						type="top"
+						//key={bun.key}
 					/>
 				}
 			</div>
@@ -140,7 +152,7 @@ const BurgerConstructor = function() {
 				{innerIngredients.map((item,i) => (
 						<BurgerIngredient 
 							item={item} 
-							key={i + 1} 
+							key={item.key}
 							index={i + 1} 
 						/>
 					)
@@ -157,23 +169,33 @@ const BurgerConstructor = function() {
 						type="bottom"
 					/>
 				}
-			</div>
+			</div>			
 
 			<div className={BurgerConstructorStyles["ingridients__info"]}>
 				<div className={BurgerConstructorStyles.price__group}>
 					<p className="text text_type_digits-medium">
 						{totalPrice}
 					</p>
-					<img src={Subtract} alt="" />
+					<img 
+						src={Subtract} 
+						alt={"Here are depicted standard galactic coins."} 
+					/>
 				</div>
-				<Button 
-					type="primary" 
-					htmlType="button" 
-					size="large"
-					onClick={sendOrder}
-				>
-					Оформить заказ
-				</Button>
+				{orderSend ? (
+					<Loader loaderType={'spinner'} message={'Order is processing...'} size={'normal'} />
+				) : (
+					<Button 
+						type={"primary"}
+						htmlType="button" 
+						size="large"
+						onClick={sendOrder}
+						style={{
+							opacity: bun ? 1 : 0.5,
+						}}
+					>
+						{bun ? 'Оформить заказ' : 'Добавьте булку'}
+					</Button>
+				)}
 			</div>
 
 			{

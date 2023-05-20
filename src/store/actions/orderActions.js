@@ -13,20 +13,23 @@ export function sendOrderAction(order) {
     dispatch({
         type: orderActionsTypes.SEND_ORDER_REQUEST
     })
-    const {data, error} = await sendOrderFetch({
-        ingredients: order.map((ingredient) => ingredient._id)
-    });
-    if (error) {
+    try {
+        const data = await sendOrderFetch({
+            ingredients: order.map((ingredient) => ingredient._id)
+        });
+        dispatch({
+            type: orderActionsTypes.SEND_ORDER_SUCCESS,
+            payload: data,
+        })
+        dispatch({ 
+            type: orderActionsTypes.CLEAR_ORDER 
+        })
+    } catch (e) {
         dispatch({
           type: orderActionsTypes.SEND_ORDER_ERROR,
-          payload: error
+          payload: e.message
         })
-        return;
     }
-    dispatch({
-        type: orderActionsTypes.SEND_ORDER_SUCCESS,
-        payload: data,
-    })
   }
 } 
 

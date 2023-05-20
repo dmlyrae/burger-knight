@@ -14,20 +14,9 @@ export const burgerConstructorReducer = (state = initialState, action) => {
 		case burgerActionsTypes.CHANGE_ORDER_INGREDIENTS: {
 			const {dragIndex, dropIndex} = action.payload;
 			const dragElement = {...state.burgerIngredients[dragIndex]}
-			let burgerIngredients;
-			if (dragIndex > dropIndex )	 {
-				burgerIngredients = state.burgerIngredients
-					.slice(0, dropIndex + 1) 
-					.concat(state.burgerIngredients.slice(dropIndex,dragIndex))
-					.concat(state.burgerIngredients.slice(dragIndex + 1))
-				burgerIngredients[dropIndex] = dragElement
-			} else {
-				burgerIngredients = state.burgerIngredients
-					.slice(0, dragIndex) 
-					.concat(state.burgerIngredients.slice(dragIndex + 1,dropIndex))
-					.concat([dragElement])
-					.concat(state.burgerIngredients.slice(dropIndex))
-			}
+			const burgerIngredients = [...state.burgerIngredients];
+			burgerIngredients.splice(dragIndex, 1);
+			burgerIngredients.splice(dropIndex, 0, dragElement);
 			return {
 				...state,
 				burgerIngredients
