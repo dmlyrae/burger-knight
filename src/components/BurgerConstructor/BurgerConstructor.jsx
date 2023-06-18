@@ -16,6 +16,8 @@ import { useDrag, useDrop } from "react-dnd"
 import PropTypes from "prop-types"
 import { v4 as uuidv4 } from 'uuid'
 import Loader from "../Loader/Loader"
+import { Navigate, useNavigate } from "react-router-dom"
+import { routerConfig } from "../../utils/routerConfig"
 
 const BurgerIngredient = ({item,index}) => {
 
@@ -100,9 +102,11 @@ const BurgerConstructor = function() {
 		},
     });
 	const dispatch = useDispatch()
+	const navigate = useNavigate()
   	const { burgerIngredients, totalPrice } = useSelector(state => state.burgerConstructor)
 	const { ingredients } = useSelector(state => state.ingredients)
 	const { orderModalOpen, orderSend } = useSelector(state => state.order)
+	const { accessToken } = useSelector( state => state.user )
 
 	const {bun, innerIngredients} = useMemo(() => {
 		return burgerIngredients.reduce((separatedIngredients,ingredient) => {
@@ -121,15 +125,18 @@ const BurgerConstructor = function() {
 	}
 
 	const sendOrder = () => {
+		if (!accessToken) {
+			navigate(routerConfig.login.path)
+		}
 		if (!bun) return;
-		dispatch(sendOrderAction(burgerIngredients))
+		dispatch(sendOrderAction(burgerIngredients, accessToken))
 	}
 
 	return (
 		<section className={BurgerConstructorStyles["ingridients"]}>
 			{!burgerIngredients.length && (
 				<h3 className={`text text_type_main-medium mt-2 text_color_inactive`}>
-					Пожалуйста, перенесите сюда булку и ингредиенты для создания заказа.
+					{'Пожалуйста, перенесите сюда булку и ингредиенты для создания заказа.'}
 				</h3>
 			)}
 			<div className={`${BurgerConstructorStyles["ingridient"]} ml-8 mb-4`}>

@@ -27,6 +27,9 @@
   cursor: pointer;
   transition: 0.5s;
 }
+.link_active p {
+  color: white;
+}
 
 .link:hover {
   color: white;

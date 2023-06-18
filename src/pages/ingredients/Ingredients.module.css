@@ -1,0 +1,15 @@
+.root {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+.header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-top: 120px;
+}
+.title {
+	display: inline-block;
+}
