@@ -20,15 +20,13 @@ export function sendOrderAction(order, token) {
 			}, 
 			token
 		)
-		if (data.success) {
-			dispatch({ 
-				type: burgerActionsTypes.CLEAR_BURGER 
-			})
-			dispatch({
-				type: orderActionsTypes.SEND_ORDER_SUCCESS,
-				payload: data,
-			})
-		}
+		dispatch({ 
+			type: burgerActionsTypes.CLEAR_BURGER 
+		})
+		dispatch({
+			type: orderActionsTypes.SEND_ORDER_SUCCESS,
+			payload: data,
+		})
 	} catch (e) {
 		dispatch({
 		  type: orderActionsTypes.SEND_ORDER_ERROR,

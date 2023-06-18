@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from "react";
-import PropTypes from "prop-types";
 import ProfileFormStyles from './ProfileForm.module.css';
 import { Button, EmailInput, Input, PasswordInput } from "@ya.praktikum/react-developer-burger-ui-components";
 import { useDispatch, useSelector } from "react-redux";
 import { setEmail, setUsername, userGetAction, userPatchAction } from "../../store/actions/userActions";
 
-function ProfileForm(props) {
-	const { } = props;
+function ProfileForm() {
 
 	const dispatch = useDispatch();
 	const { refreshToken, username, email, accessToken } = useSelector( state => state.user );
@@ -82,14 +80,13 @@ function ProfileForm(props) {
 			/>
 			{/*<div className={ProfileFormStyles.buttons}>
 				<Button 
-					htmlType="button" 
+					htmlType={"submit"}
 					type="primary" 
-					onClick={onSave}
 				>
 					{'Изменить'}
 				</Button>
 				<Button 
-					htmlType="button" 
+					htmlType={"button"}
 					type="primary" 
 					onClick={onCancel}
 				>
@@ -98,7 +95,5 @@ function ProfileForm(props) {
 			</div>*/}
 		</form>
 )}
-
-ProfileForm.propTypes = PropTypes.any
 
 export default ProfileForm

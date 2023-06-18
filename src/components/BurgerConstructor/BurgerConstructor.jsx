@@ -127,6 +127,7 @@ const BurgerConstructor = function() {
 	const sendOrder = () => {
 		if (!accessToken) {
 			navigate(routerConfig.login.path)
+			return;
 		}
 		if (!bun) return;
 		dispatch(sendOrderAction(burgerIngredients, accessToken))

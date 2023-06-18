@@ -1,19 +1,14 @@
 import React from "react";
-import PropTypes from "prop-types";
 import OrdersHistoryStyles from './OrdersHistory.module.css';
 
-function OrdersHistory(props) {
-    const { } = props;
+function OrdersHistory() {
 
     return (
         <div 
             className={OrdersHistoryStyles.root}
         >
-            
-            
+            {'Order History /sprint-4/'}
         </div>
 )}
-
-OrdersHistory.propTypes = PropTypes.any
 
 export default OrdersHistory

@@ -1,7 +1,7 @@
 import IngridientStyles from "./IngredientDetails.module.css";
 import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
-import { cardPropsTypes } from "../../utils/prop-types";
+import { cardProps } from "../../utils/prop-types";
 
 const IngredientVocabulary = {
 	calories: 'Калорий, ккал',
@@ -51,7 +51,7 @@ const IngredientsDetails = (props) => {
 }
 
 IngredientsDetails.propTypes = {
-	igredient: cardPropsTypes
+	igredient: cardProps
 } 
 
 export default IngredientsDetails

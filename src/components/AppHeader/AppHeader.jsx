@@ -33,9 +33,12 @@ const AppHeader = () => {
 					<p className="text text_type_main-default">Лента заказов</p>
 				</NavLink>
 			</ul>
-			<div className={AppHeaderStyles.logo}>
-			<Logo />
-			</div>
+			<a 
+				className={AppHeaderStyles.logo}
+				href={"/"}
+			>
+				<Logo />
+			</a>
 			<NavLink 
 				to={routerConfig.profile.path}
 				className={ (isActive) => {

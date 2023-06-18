@@ -154,7 +154,7 @@ const BurgerIngredients = function() {
 	return (
 		<section className={BurgerIngredientsStyles['additional-ingridients']}>
 			<h2 className={`${BurgerIngredientsStyles.title} text text_type_main-large`}>
-				Соберите бургер
+				{'Соберите бургер'}
 			</h2>
 
 			<nav className={BurgerIngredientsStyles['additional-ingridients__nav']}>
@@ -163,21 +163,21 @@ const BurgerIngredients = function() {
 					active={activeTab === "bun"} 
 					onClick={selectTab}
 				>
-					Булки
+					{'Булки'}
 				</Tab>
 				<Tab 
 					value={"main"}
 					active={activeTab === "main"} 
 					onClick={selectTab}
 				>
-					Соусы
+					{'Соусы'}
 				</Tab>
 				<Tab 
 					value={"sauce"}
 					active={activeTab === "sauce"} 
 					onClick={selectTab}
 				>
-					Начинки
+					{'Начинки'}
 				</Tab>
 			</nav>
 

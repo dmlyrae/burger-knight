@@ -34,6 +34,7 @@ function ForgotPassword() {
 			</h2>
 			<form 
 				className={`${ForgotPasswordStyles.form} mb-20`} 
+				onSubmit={passwordRestore}
 			>
 				<EmailInput
 					extraClass={'mb-6'}
@@ -44,8 +45,7 @@ function ForgotPassword() {
 				<Button
 					extraClass={ForgotPasswordStyles.button}
 					type={"primary"}
-					htmlType="button"
-					onClick={passwordRestore}
+					htmlType={"submit"}
 				>
 					{'Восстановить'}
 				</Button>

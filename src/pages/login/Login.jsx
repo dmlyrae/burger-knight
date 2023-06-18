@@ -18,7 +18,6 @@ function Login() {
 	}
 
 	const onEmailChange = (e) => {
-		console.log('email', e.target.value)
 		if (e.target.value) dispatch(setEmail(e.target.value));
 	}
 
@@ -85,7 +84,6 @@ function Login() {
 						type={"primary"}
 						size={"medium"}
 						extraClass={[LoginStyles["registration-card__button"], "mb-28"].join(" ")}
-						onClick={authSubmit}
 					>
 						{"Войти"}
 					</Button>

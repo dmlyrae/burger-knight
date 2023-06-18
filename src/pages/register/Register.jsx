@@ -72,7 +72,7 @@ function Register() {
 				/>
 				<Button
 					type="primary"
-					htmlType="submit"
+					htmlType={"submit"}
 					extraClass={RegisterStyles.button}
 				>
 					{'Зарегистрироваться'}

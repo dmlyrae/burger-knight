@@ -56,14 +56,10 @@ export function userGetAction(token) {
 				type: userActionsTypes.USER_GET_REQUEST,
 			});
 			const data = await userGetRequest(token);
-			if (data.success) {
-				dispatch({
-					type: userActionsTypes.USER_GET_SUCCESS,
-					payload: data,
-				})
-			} else {
-				throw Error("User not found.");
-			}
+			dispatch({
+				type: userActionsTypes.USER_GET_SUCCESS,
+				payload: data,
+			})
 		} catch (e) {
 			dispatch({
 				type: userActionsTypes.USER_GET_ERROR,
@@ -80,14 +76,10 @@ export function userPatchAction(patchData, token) {
 				type: userActionsTypes.USER_PATCH_REQUEST,
 			});
 			const data = await userPatchAction(patchData, token);
-			if (data.success) {
-				dispatch({
-					type: userActionsTypes.USER_PATCH_SUCCESS,
-					payload: data,
-				})
-			} else {
-				throw Error("User not found.");
-			}
+			dispatch({
+				type: userActionsTypes.USER_PATCH_SUCCESS,
+				payload: data,
+			})
 		} catch (e) {
 			dispatch({
 				type: userActionsTypes.USER_PATCH_ERROR,
@@ -104,14 +96,10 @@ export function registrationAction(registrationData) {
 				type: userActionsTypes.REGISTRATION_REQUEST,
 			});
 			const data = await registrationRequest(registrationData);
-			if (data.success && data.user) {
-				dispatch({
-					type: userActionsTypes.REGISTRATION_SUCCESS,
-					payload: data,
-				})
-			} else {
-				throw new Error("Authorization failed.");
-			}
+			dispatch({
+				type: userActionsTypes.REGISTRATION_SUCCESS,
+				payload: data,
+			})
 		} catch (e) {
 			dispatch({
 				type: userActionsTypes.REGISTRATION_ERROR,
@@ -128,14 +116,10 @@ export function passwordRestoreAction( password, code ) {
 				type: userActionsTypes.RESTORE_PASSWORD_REQUEST,
 			})
 			const data = await passwordRestoreRequest(password, code)
-			if (data.success) {
-				dispatch({
-					type: userActionsTypes.RESTORE_PASSWORD_SUCCESS,
-					payload: data
-				})
-			} else {
-				throw new Error('Code not valid.')
-			}
+			dispatch({
+				type: userActionsTypes.RESTORE_PASSWORD_SUCCESS,
+				payload: data
+			})
 		} catch (e) {
 			dispatch({
 				type: userActionsTypes.RESTORE_PASSWORD_ERROR,
@@ -152,14 +136,9 @@ export function passwordForgotAction(email) {
 				type: userActionsTypes.FORGOT_PASSWORD_REQUEST,
 			})
 			const data = await passwordForgotRequest(email)
-			console.log('data', data)
-			if (data.success) {
-				dispatch({
-					type: userActionsTypes.FORGOT_PASSWORD_SUCCESS,
-				})
-			} else {
-				throw new Error('User not found.')
-			}
+			dispatch({
+				type: userActionsTypes.FORGOT_PASSWORD_SUCCESS,
+			})
 		} catch (e) {
 			dispatch({
 				type: userActionsTypes.FORGOT_PASSWORD_ERROR,
@@ -175,12 +154,10 @@ export function refreshTokenAction(refreshToken) {
 		if (!token) return;
 		try {
 			const data = await refreshTokenRequest(token);
-			if (data.success && data.accessToken) {
-				dispatch({
-					type: userActionsTypes.REFRESH_TOKEN,
-					payload: data
-				})
-			}
+			dispatch({
+				type: userActionsTypes.REFRESH_TOKEN,
+				payload: data
+			})
 		} catch (e) {
 			dispatch({
 				type: userActionsTypes.COMMON_USER_ERROR,
@@ -214,12 +191,10 @@ export function loginAction(loginData) {
 	})
 	try {
 		const data = await authRequest(loginData);
-		if (data.success) {
-			dispatch({
-				type: userActionsTypes.LOGIN_SUCCESS,
-				payload: data,
-			})
-		}
+		dispatch({
+			type: userActionsTypes.LOGIN_SUCCESS,
+			payload: data,
+		})
 	} catch (e) {
 		dispatch({
 		  type: userActionsTypes.LOGIN_ERROR,
