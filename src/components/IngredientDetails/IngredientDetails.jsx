@@ -1,6 +1,7 @@
 import IngridientStyles from "./IngredientDetails.module.css";
 import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
+import { cardProps } from "../../utils/prop-types";
 
 const IngredientVocabulary = {
 	calories: 'Калорий, ккал',
@@ -25,24 +26,32 @@ IngredientElement.propTypes = {
 	value: PropTypes.number,
 }
 
-const IngredientsDetails = () => {
+const IngredientsDetails = (props) => {
+	const { ingredient } = props;
 	const { ingredientDetails } = useSelector(store => store.singleIngredient);
-	return ingredientDetails && (
+
+	const renderIngredient = ingredient ?? ingredientDetails;
+
+	return renderIngredient && (
 			<div className={IngridientStyles["ingredient-details"]}>
 				<img
-					src={ingredientDetails.image_large}
-					alt={`Here depicted delicious burger ingredient: ${ingredientDetails.name}.`}
+					src={renderIngredient.image_large}
+					alt={`Here depicted delicious burger ingredient: ${renderIngredient.name}.`}
 					className={IngridientStyles["ingredient-details__image"]}
 				/>
-				<h2 className="text text_type_main-medium mt-4 mb-8">{ingredientDetails.name}</h2>
+				<h2 className="text text_type_main-medium mt-4 mb-8">{renderIngredient.name}</h2>
 				<section className={IngridientStyles["ingredient-details__section-info"]}>
-					<IngredientElement value={ingredientDetails.calories ?? 0} title={'calories'} />
-					<IngredientElement value={ingredientDetails.proteins ?? 0} title={'proteins'} />
-					<IngredientElement value={ingredientDetails.fat ?? 0} title={'fat'} />
-					<IngredientElement value={ingredientDetails.carbohydrates ?? 0} title={'carbohydrates'} />
+					<IngredientElement value={renderIngredient.calories ?? 0} title={'calories'} />
+					<IngredientElement value={renderIngredient.proteins ?? 0} title={'proteins'} />
+					<IngredientElement value={renderIngredient.fat ?? 0} title={'fat'} />
+					<IngredientElement value={renderIngredient.carbohydrates ?? 0} title={'carbohydrates'} />
 				</section>
 			</div>
 		)
 }
+
+IngredientsDetails.propTypes = {
+	igredient: cardProps
+} 
 
 export default IngredientsDetails

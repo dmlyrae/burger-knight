@@ -1,4 +1,4 @@
-import React, {forwardRef, createRef, useRef, useMemo} from "react";
+import React, {forwardRef, createRef, useRef, useMemo, useEffect} from "react";
 import BurgerIngredientsStyles from "./BurgerIngredients.module.css"
 import { Tab, CurrencyIcon, Counter } from "@ya.praktikum/react-developer-burger-ui-components"
 import { cardDefaultProps, cardProps } from "../../utils/prop-types"
@@ -8,6 +8,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { ingredientToggleWindow, setIngredient } from "../../store/actions/singleIngredientActions";
 import PropTypes from 'prop-types';
 import { useDrag } from "react-dnd";
+import { useLocation, useNavigate } from "react-router-dom";
+import { routerConfig } from "../../utils/routerConfig";
 
 
 const Ingredient = (props) => {
@@ -90,9 +92,10 @@ IngridientsList.propTypes = {
 const BurgerIngredients = function() {
 
 	const dispatch = useDispatch()
+	const location = useLocation()
 
 	const { ingredients } = useSelector(state => state.ingredients)
-	const { ingredientDetailsModalWindow } = useSelector(state => state.singleIngredient)
+	const { ingredientDetailsModalWindow, ingredientDetails } = useSelector(state => state.singleIngredient)
 	const [ activeTab,setActiveTab ] = React.useState("bun")
 
 	const buns = ingredients.filter((card) => card.type === "bun")
@@ -120,6 +123,18 @@ const BurgerIngredients = function() {
 		dispatch(ingredientToggleWindow())
 	}
 
+	useEffect(() => {
+		if (ingredientDetails) {
+			document.title = ingredientDetails.name;
+			const id = window.history.length;
+			window.history.pushState({ id }, "", `/ingredients/${ingredientDetails._id}`);
+		} else {
+			document.title = 'Burger constructor';
+			const id = window.history.length - 1;
+			window.history.replaceState( { id }, "", `/`)
+		}
+	}, [ingredientDetails])
+
 	const scrollHandler = (evt) => {
 		if (evt.currentTarget && rootListRef.current ) { 
 			const parentOffset = rootListRef.current.getBoundingClientRect().top
@@ -139,7 +154,7 @@ const BurgerIngredients = function() {
 	return (
 		<section className={BurgerIngredientsStyles['additional-ingridients']}>
 			<h2 className={`${BurgerIngredientsStyles.title} text text_type_main-large`}>
-				Соберите бургер
+				{'Соберите бургер'}
 			</h2>
 
 			<nav className={BurgerIngredientsStyles['additional-ingridients__nav']}>
@@ -148,21 +163,21 @@ const BurgerIngredients = function() {
 					active={activeTab === "bun"} 
 					onClick={selectTab}
 				>
-					Булки
+					{'Булки'}
 				</Tab>
 				<Tab 
 					value={"main"}
 					active={activeTab === "main"} 
 					onClick={selectTab}
 				>
-					Соусы
+					{'Соусы'}
 				</Tab>
 				<Tab 
 					value={"sauce"}
 					active={activeTab === "sauce"} 
 					onClick={selectTab}
 				>
-					Начинки
+					{'Начинки'}
 				</Tab>
 			</nav>
 
