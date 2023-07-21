@@ -1,6 +1,4 @@
-import { Dispatch } from "react"
-import { getIngredients } from "../../utils/burger-api"
-import { Action, PayloadAction } from "@reduxjs/toolkit"
+import burgerApi from "../../utils/burger-api"
 import { AppDispatch } from ".."
 import { errorMessage, typedAction } from "../../types/commonTypes"
 
@@ -18,7 +16,7 @@ export const fetchIngredients:IFetchIngredients = function() {
 	return async function(dispatch:AppDispatch) {
 		dispatch(typedAction( ingredientsActionsTypes.FETCH_INGREDIENTS_REQUEST ))
 		try {
-			const data = await getIngredients();
+			const data = await burgerApi.getIngredients();
 			dispatch({
 					type: ingredientsActionsTypes.FETCH_INGREDIENTS_SUCCESS,
 					payload: data,

@@ -1,4 +1,13 @@
 export const apiUrl = "https://norma.nomoreparties.space/api";
+export const wssUrl = "wss://norma.nomoreparties.space/orders";
+export const maxIngredientsShowed = 4;
+
+export enum wssActionsNames {
+  INIT = 'INIT',
+  AUTH_INIT = 'AUTH_INIT',
+  SEND_MESSAGE = 'SEND_MESSAGE',
+  SEND_AUTH_MESSAGE = 'SEND_AUTH_MESSAGE',
+}
 
 export const defaultData  = [
   {

@@ -1,113 +1,138 @@
 import { RequestOptions } from "https"
-import { apiUrl } from "./data"
+import { apiUrl as defaultApiUrl } from "./data"
 import { TCard } from "../types/cards"
 import { IUserRegistrationRequest, IUserRequest } from "../store/reducers/userReducer"
 
-const checkResponse = (response:Response) => {
-	if (response.ok) return response.json()
-	return response.json().then(() => {
-		throw Error('Response error: ' + response.status)
-	})
-}
 
-const validateResponse = (res:{success: boolean, data: any}) => {
-	if (res.success) return res.data ?? res;
-	throw Error('Bad response.')
-}
 
-const request = (action:string, options?:RequestInit) => {
-	return fetch(`${apiUrl}/${action}`, options)
-		.then(checkResponse)
-		.then(validateResponse)
-}
+/*			baseUrl,
+			getIngredients: `${baseUrl}`,
+			checkoutOrder: `${baseUrl}/orders`,
+			registration: `${baseUrl}/auth/register`,
+			login: `${baseUrl}/auth/login`,
+			logout: `${baseUrl}/auth/logout`,
+			token: `${baseUrl}/auth/token`,
+			user: `${baseUrl}/auth/user`,
+			forgotPassword: `${baseUrl}/password-reset`,
+			resetPassword: `${baseUrl}/password-reset/reset`,
+*/
 
-export const registrationRequest = (registrationData:IUserRegistrationRequest) => request('auth/register', {
-	method: 'POST',
-	mode: 'cors',
-	headers: {
-		'Content-Type': 'application/json'
-	},
-	body: JSON.stringify(registrationData)
-})
+class BurgerApi {
 
-export const authRequest = (authData:{email:string, password:string }) => request('auth/login', {
-	method: 'POST',
-	mode: 'cors',
-	headers: {
-		'Content-Type': 'application/json'
-	},
-	body: JSON.stringify(authData)
-})
+	private _apiUrl: string;
 
-export const logoutRequest = (refreshToken:string) => request('auth/logout', {
-	method: 'POST',
-	mode: 'cors',
-	headers: {
-		'Content-Type': 'application/json'
-	},
-	body: JSON.stringify({
-		token: refreshToken
-	})
-})
-
-export const refreshTokenRequest = (refreshToken:string) => request('auth/token', {
-	method: 'POST',
-	mode: 'cors',
-	headers: {
-		'Content-Type': 'application/json'
-	},
-	body: JSON.stringify({
-		token: refreshToken
-	})
-})
-
-export const userGetRequest = (token:string) => request('auth/user', {
-	headers: {
-		'Authorization': token,
+	constructor(apiUrl = defaultApiUrl) {
+		this._apiUrl = apiUrl;
 	}
-});
 
-export const userPatchRequest = (patchData:IUserRequest, token:string) => request('auth/token', {
-	method: 'PATCH',
-	headers: {
-		'Content-Type': 'application/json',
-		'Authorization': token,
-	},
-	body: JSON.stringify(patchData)
-})
+	private checkResponse = (response:Response) => {
+		if (response.ok) return response.json()
+		return response.json().then(() => {
+			throw Error('Response error: ' + response.status)
+		})
+	}
 
-export const passwordRestoreRequest = (password:string, token:string) => request('password-reset/reset', {
-	method: 'POST',
-	mode: 'cors',
-	headers: {
-		'Content-Type': 'application/json',
-	},
-	body: JSON.stringify({
-		password,
-		token
+	private validateResponse = (res:{success: boolean, data: any}) => {
+		if (res.success) return res.data ?? res;
+		throw Error('Bad response.')
+	}
+
+	private request = (action:string, options?:RequestInit) => {
+		return fetch(`${this._apiUrl}/${action}`, options)
+			.then(this.checkResponse)
+			.then(this.validateResponse)
+	}
+
+	registrationRequest = (registrationData:IUserRegistrationRequest) => this.request('auth/register', {
+		method: 'POST',
+		mode: 'cors',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify(registrationData)
 	})
-})
 
-export const passwordForgotRequest = (email:string) => request('password-reset', {
-	method: 'POST',
-	mode: 'cors',
-	headers: {
-		'Content-Type': 'application/json',
-	},
-	body: JSON.stringify({
-		email
+	authRequest = (authData:{email:string, password:string }) => this.request('auth/login', {
+		method: 'POST',
+		mode: 'cors',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify(authData)
 	})
-})
 
+	logoutRequest = (refreshToken:string) => this.request('auth/logout', {
+		method: 'POST',
+		mode: 'cors',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({
+			token: refreshToken
+		})
+	})
 
-export const sendOrderRequest = (order:{ingredients: string[]}, token:string) => request('orders', {
-	method: 'POST',
-	mode: 'cors',
-	headers: {
-		'Content-Type': 'application/json',
-		'Authorization': token,
-	},
-	body: JSON.stringify(order)
-})
+	refreshTokenRequest = (refreshToken:string) => this.request('auth/token', {
+		method: 'POST',
+		mode: 'cors',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({
+			token: refreshToken
+		})
+	})
 
-export const getIngredients = () => request('ingredients');
+	userGetRequest = (token:string) => this.request('auth/user', {
+		headers: {
+			'Authorization': token,
+		}
+	});
+
+	userPatchRequest = (patchData:IUserRequest, token:string) => this.request('auth/token', {
+		method: 'PATCH',
+		headers: {
+			'Content-Type': 'application/json',
+			'Authorization': token,
+		},
+		body: JSON.stringify(patchData)
+	})
+
+	passwordRestoreRequest = (password:string, token:string) => this.request('password-reset/reset', {
+		method: 'POST',
+		mode: 'cors',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify({
+			password,
+			token
+		})
+	})
+
+	passwordForgotRequest = (email:string) => this.request('password-reset', {
+		method: 'POST',
+		mode: 'cors',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify({
+			email
+		})
+	})
+
+	sendOrderRequest = (order:{ingredients: string[]}, token:string) => this.request('orders', {
+		method: 'POST',
+		mode: 'cors',
+		headers: {
+			'Content-Type': 'application/json',
+			'Authorization': token,
+		},
+		body: JSON.stringify(order)
+	})
+
+	getIngredients = () => this.request('ingredients');
+
+}
+
+export default new BurgerApi();

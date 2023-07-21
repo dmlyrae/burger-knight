@@ -5,6 +5,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { routerConfig } from "../../utils/routerConfig";
 import { logoutAction } from "../../store/actions/userActions";
 import { useAppSelector } from "../../types/redux";
+import Modal from "../Modal/Modal";
+import { singleOrderSlice } from "../../store/reducers/singleOrderReducer";
+import OrderDetails from "../OrderDetails/OrderDetails";
+import SingleOrderDetails from "../SingleOrderDetails/SingleOrderDetails";
 
 
 interface ProfileMenu {
@@ -14,9 +18,15 @@ const ProfileMenu:FC<ProfileMenu> = function(props) {
 
 	const { tab } = props;
 	const { refreshToken } = useAppSelector( state => state.user );
+	const { order: singleOrder } = useAppSelector( state => state.singleOrder );
 	const dispatch = useDispatch();
 
+	const closeOrderModalWindow = () => {
+		dispatch(singleOrderSlice.actions.closeOrder())
+	}
+
 	return (
+	<>
 		<div 
 			className={ProfileMenuStyles.root}
 		>
@@ -71,6 +81,15 @@ const ProfileMenu:FC<ProfileMenu> = function(props) {
 				}
 			</p> 
 		</div>
+
+		{
+			singleOrder && (
+				<Modal title={'Детали ингридиента'} closeModal={closeOrderModalWindow}>
+					<SingleOrderDetails />
+				</Modal>
+			)
+		}
+	</>
 )}
 
 ProfileMenu.propTypes = {

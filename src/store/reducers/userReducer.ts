@@ -176,7 +176,8 @@ export const userReducer = (state = initialState, action:PayloadAction<any>):TIn
 		case userActionsTypes.LOGIN_SUCCESS: {
 			const { refreshToken, accessToken, user } = action.payload as IAuthRequest;
 			if (!accessToken || !refreshToken) return state;
-			localStorage.setItem('token', refreshToken);
+			localStorage.setItem('token', refreshToken)
+			sessionStorage.setItem('token', accessToken)
 			return {
 				...state,
 				accessToken,

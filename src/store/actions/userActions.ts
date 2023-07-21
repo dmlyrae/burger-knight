@@ -1,12 +1,4 @@
-import { authRequest, 
-		logoutRequest, 
-		passwordForgotRequest, 
-		passwordRestoreRequest, 
-		refreshTokenRequest, 
-		registrationRequest, 
-		userGetRequest, 
-		userPatchRequest 
-	} from "../../utils/burger-api"
+import burgerApi from "../../utils/burger-api"
 import { TDispatchAction, errorMessage, typedAction } from "../../types/commonTypes"
 import { IUserRegistrationRequest, IUserRequest } from "../reducers/userReducer"
 
@@ -58,7 +50,7 @@ export const userGetAction:IUserGetAction = function(token:string) {
 	return async function(dispatch) {
 		try {
 			dispatch(typedAction(userActionsTypes.USER_GET_REQUEST));
-			const data = await userGetRequest(token);
+			const data = await burgerApi.userGetRequest(token);
 			dispatch({
 				type: userActionsTypes.USER_GET_SUCCESS,
 				payload: data,
@@ -100,7 +92,7 @@ export const registrationAction:IRegistrationAction = function(registrationData)
 	return async function(dispatch) {
 		try {
 			dispatch(typedAction( userActionsTypes.REGISTRATION_REQUEST));
-			const data = await registrationRequest(registrationData);
+			const data = await burgerApi.registrationRequest(registrationData);
 			dispatch({
 				type: userActionsTypes.REGISTRATION_SUCCESS,
 				payload: data,
@@ -121,7 +113,7 @@ export const passwordRestoreAction:IPasswordRestoreAction = function( password, 
 	return async function(dispatch) {
 		try {
 			dispatch(typedAction(userActionsTypes.RESTORE_PASSWORD_REQUEST));
-			const data = await passwordRestoreRequest(password, code)
+			const data = await burgerApi.passwordRestoreRequest(password, code)
 			dispatch({
 				type: userActionsTypes.RESTORE_PASSWORD_SUCCESS,
 				payload: data
@@ -143,7 +135,7 @@ export const passwordForgotAction:IPasswordForgotAction = function(email) {
 	return async function(dispatch) {
 		try {
 			dispatch(typedAction(userActionsTypes.FORGOT_PASSWORD_REQUEST))
-			const data = await passwordForgotRequest(email)
+			const data = await burgerApi.passwordForgotRequest(email)
 			dispatch(typedAction(userActionsTypes.FORGOT_PASSWORD_SUCCESS))
 		} catch (e:unknown | Error) {
 			dispatch({
@@ -162,7 +154,7 @@ export const refreshTokenAction:IRefreshTokenAction = function(refreshToken) {
 		const token = refreshToken ?? localStorage.getItem('token');
 		if (!token) return;
 		try {
-			const data = await refreshTokenRequest(token);
+			const data = await burgerApi.refreshTokenRequest(token);
 			dispatch({
 				type: userActionsTypes.REFRESH_TOKEN,
 				payload: data
@@ -182,7 +174,7 @@ interface ILogoutAction {
 export const logoutAction:ILogoutAction = function(refreshToken) {
   return async function(dispatch) {
 	try {
-		const data = await logoutRequest(refreshToken);
+		const data = await burgerApi.logoutRequest(refreshToken);
 		dispatch({
 			type: userActionsTypes.LOGOUT,
 			payload: data,
@@ -203,7 +195,7 @@ export const loginAction:ILoginAction = function(loginData) {
   return async function(dispatch) {
 	dispatch(typedAction(userActionsTypes.LOGIN_REQUEST ))
 	try {
-		const data = await authRequest(loginData);
+		const data = await burgerApi.authRequest(loginData);
 		dispatch({
 			type: userActionsTypes.LOGIN_SUCCESS,
 			payload: data,

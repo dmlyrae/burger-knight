@@ -24,13 +24,15 @@ const AppHeader = () => {
 					<p className="text text_type_main-default">Конструктор</p>
 				</NavLink>
 				<NavLink 
-					to={'/history'}
+					to={'/feed'}
 					className={ () => {
 						return `${AppHeaderStyles.link} p-4 ${location.pathname === '/history' ? AppHeaderStyles.link_active : ''}`
 					} }
 				>
 					<ListIcon type={"secondary"}></ListIcon>
-					<p className="text text_type_main-default">Лента заказов</p>
+					<p className="text text_type_main-default">
+						Лента заказов
+					</p>
 				</NavLink>
 			</ul>
 			<a 

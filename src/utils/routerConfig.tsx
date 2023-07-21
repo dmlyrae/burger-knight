@@ -7,6 +7,7 @@ import ProfilePage from "../pages/profile/Profile"
 import IngredientsPage from "../pages/ingredients/Ingredients"
 import ProtectedRouteElement from "../components/ProtectedRouteElement/ProtectedRouteElement"
 import { PathRouteProps, RouteProps } from "react-router-dom"
+import Feed from "../pages/feed/Feed"
 
 
 export type TRouterConfig = Record<string, RouteProps>; 
@@ -79,5 +80,17 @@ export const routerConfig:TRouterConfig = {
 					<ProfilePage tab={'orderId'} />
 				}
 			/>
-	}
+	},
+	feed: {
+		path: '/feed',
+		element: <Feed />
+	},
+	feedId: {
+		path: '/feed/:id',
+		element: <ProtectedRouteElement
+			element={
+				<Feed />
+			} 
+		/>
+	},
 } as const;

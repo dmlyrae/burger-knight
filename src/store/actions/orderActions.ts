@@ -1,7 +1,7 @@
 import { Action, ActionCreator } from "redux";
 import { TCard } from "../../types/cards";
 import { TDispatchAction, errorMessage, typedAction } from "../../types/commonTypes";
-import { sendOrderRequest } from "../../utils/burger-api";
+import burgerApi from "../../utils/burger-api";
 import { burgerActionsTypes } from "./burgerActions";
 import { ActionCreatorWithOptionalPayload, ActionCreatorWithoutPayload, PayloadAction, PayloadActionCreator } from "@reduxjs/toolkit";
 
@@ -20,7 +20,7 @@ export const sendOrderAction:ISendOrderAction = function(order, token) {
   return async function(dispatch) {
 	dispatch(typedAction(orderActionsTypes.SEND_ORDER_REQUEST))
 	try {
-		const data = await sendOrderRequest({
+		const data = await burgerApi.sendOrderRequest({
 				ingredients: order.map((ingredient) => ingredient._id),
 			}, 
 			token
