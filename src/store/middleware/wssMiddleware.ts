@@ -1,9 +1,24 @@
 import { AnyAction, MiddlewareAPI } from '@reduxjs/toolkit';
-import { wssActionsNames } from '../../utils/data';
-import { getCookie } from '../../utils/cookie';
+import { wssActionsNames, wssAllUrl, wssUrl } from '../../utils/data';
 import { ISocketActions } from '../reducers/socketReducer';
+import { refreshTokenAction } from '../actions/userActions';
 
-export const socketMiddleware = (wsUrl: string, wssActions: ISocketActions , auth: boolean) => {
+const delay = 300;
+
+type socketQueue = {
+	lastRequest: number;
+	getInterval: () => number;
+}
+const socketQueue:socketQueue = {
+	lastRequest: Date.now() - delay,
+	getInterval: function() {
+		const now = Date.now();
+		const interval = delay - (now - this.lastRequest); 
+		return interval < 0 ? 0 : interval;
+	},
+}
+
+export const socketMiddleware = (wssActions: ISocketActions , auth: boolean) => {
   return (store: MiddlewareAPI) => {
 
 	let socket: WebSocket | null = null
@@ -13,15 +28,15 @@ export const socketMiddleware = (wsUrl: string, wssActions: ISocketActions , aut
 		const { type, payload } = action;
 		const { wsInit, wsSendMessage, onOpen, onClose, onError, onMessage } = wssActions;
 
-		const accessToken = sessionStorage.getItem('token');
-		//const refreshToken = localStorage.getItem('token');
 
 		if (type === wssActionsNames.INIT) {
-			socket = new WebSocket(`wss://norma.nomoreparties.space/orders/all`);
+			socket = new WebSocket(wssAllUrl);
 		} 
 
+		const accessToken = sessionStorage.getItem('token');
+
 		if (type === wssActionsNames.AUTH_INIT && accessToken) {
-			socket = new WebSocket(`${wsUrl}?token=${accessToken.split(' ')[1]}`);
+			socket = new WebSocket(`${wssUrl}?token=${accessToken.split(' ')[1]}`);
 		} 
 
 		if (socket) {
@@ -37,12 +52,30 @@ export const socketMiddleware = (wsUrl: string, wssActions: ISocketActions , aut
 			socket.onmessage = async (event) => {
 				const { data } = event;
 				const { success, ...restData } = JSON.parse(data);
-				//console.log('restData', restData)
-				dispatch(onMessage(JSON.parse(data)));
+				if (!success) {
+					const refreshToken = localStorage.getItem('token');
+					if (refreshToken) {
+						refreshTokenAction(refreshToken)(dispatch)
+					}
+				} else {
+					dispatch(onMessage(JSON.parse(data)));
+				}
 			}
 			if (type === wssActionsNames.SEND_MESSAGE) {
 				const message = accessToken ? { ...payload, token: accessToken } : { ...payload };
-				socket.send(JSON.stringify(message));
+				const now = Date.now();
+				if (now - socketQueue.lastRequest < delay) {
+					socket.send(JSON.stringify(message));
+				} else {
+					const interval = socketQueue.getInterval();
+					(function(interval:number,msg:string){
+						const timerId = setTimeout(function(){
+							clearTimeout(timerId);
+							socket?.send(JSON.stringify(msg))	
+						}, interval)
+					})(interval,message);
+					socketQueue.lastRequest = now;
+				}
 			}
 		}
 

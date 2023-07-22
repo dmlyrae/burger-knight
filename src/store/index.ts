@@ -3,7 +3,6 @@ import { rootReducer } from './reducers'
 import thunk from 'redux-thunk'
 import { configureStore } from '@reduxjs/toolkit';
 import { socketMiddleware } from './middleware/wssMiddleware';
-import { wssUrl } from '../utils/data';
 import { wsActions, wsActionsAuth } from './reducers/wssOrders';
 
 const composeEnhancers =
@@ -15,8 +14,8 @@ const store = configureStore({
   reducer:rootReducer,
   middleware: (getDefaultMiddleware) => getDefaultMiddleware({})
     .concat([
-      socketMiddleware(wssUrl, wsActions, false), 
-      socketMiddleware(wssUrl, wsActionsAuth, true), 
+      socketMiddleware(wsActions, false), 
+      socketMiddleware(wsActionsAuth, true), 
       thunk,
     ]),
 })

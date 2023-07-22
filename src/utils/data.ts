@@ -1,5 +1,6 @@
 export const apiUrl = "https://norma.nomoreparties.space/api";
 export const wssUrl = "wss://norma.nomoreparties.space/orders";
+export const wssAllUrl = "wss://norma.nomoreparties.space/orders/all"; 
 export const maxIngredientsInList = 4;
 
 export enum wssActionsNames {

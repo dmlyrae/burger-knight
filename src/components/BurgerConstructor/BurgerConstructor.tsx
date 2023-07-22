@@ -109,7 +109,7 @@ const BurgerConstructor:FC = function() {
 	const { accessToken } = useAppSelector( state => state.user )
 
 	const {bun, innerIngredients} = useMemo(() => {
-		return burgerIngredients.reduce((separatedIngredients:{bun: TCard,innerIngredients: TCard[]},ingredient:TCard) => {
+		return burgerIngredients.reduce((separatedIngredients:{bun: TCard | null,innerIngredients: TCard[]},ingredient:TCard) => {
 			if (ingredient.type === 'bun') {
 				separatedIngredients.bun = ingredient
 			} else {

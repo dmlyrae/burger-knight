@@ -1,11 +1,11 @@
 import { PayloadAction } from "@reduxjs/toolkit"
-import { orderActionsTypes } from "../actions/orderActions"
+import { TOrderActions, orderActionsTypes } from "../actions/orderActions"
 import { TCard } from "../../types/cards";
 import { IOrder } from "../../types/orders";
 
 type TInitialState = {
 	orderSend: boolean,
-	orderSendError: boolean,
+	orderSendError: boolean | string,
 	orderDetails: TOrderDetails,
 	orderModalOpen: boolean,
 }
@@ -33,7 +33,7 @@ const initialState:TInitialState = {
 	orderModalOpen: false,
 }
 
-export const orderReducer = (state = initialState, action: PayloadAction<any>):TInitialState => {
+export const orderReducer = (state = initialState, action: TOrderActions):TInitialState => {
 	switch (action.type) {
 		case orderActionsTypes.TOGGLE_ORDER_MODAL: {
 			return {

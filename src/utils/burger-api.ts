@@ -2,6 +2,7 @@ import { RequestOptions } from "https"
 import { apiUrl as defaultApiUrl } from "./data"
 import { TCard } from "../types/cards"
 import { IUserRegistrationRequest, IUserRequest } from "../store/reducers/userReducer"
+import { TUserResponse } from "../store/actions/userActions";
 
 
 
@@ -32,7 +33,7 @@ class BurgerApi {
 		})
 	}
 
-	private validateResponse = (res:{success: boolean, data: any}) => {
+	private validateResponse = (res:{success: boolean, data: unknown}) => {
 		if (res.success) return res.data ?? res;
 		throw Error('Bad response.')
 	}
@@ -79,7 +80,7 @@ class BurgerApi {
 		})
 	})
 
-	refreshTokenRequest = (refreshToken:string) => this.request('auth/token', {
+	refreshTokenRequest = (refreshToken:string):Promise<Partial<TUserResponse>> => this.request('auth/token', {
 		method: 'POST',
 		mode: 'cors',
 		headers: {
@@ -90,7 +91,7 @@ class BurgerApi {
 		})
 	})
 
-	userGetRequest = (token:string) => {
+	userGetRequest = (token:string):Promise<Partial<TUserResponse>> => {
 		return this.request('auth/user', {
 			method: 'GET',
 			mode: 'cors',

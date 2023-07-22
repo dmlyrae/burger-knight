@@ -17,17 +17,17 @@ export const FeedId:FC<FeedIdProps> = function() {
 	const { total, totalToday, wsConnection } = useAppSelector( state => state.wssOrders );
 	const { isAuth } = useAppSelector( state => state.user )
 
-    const order = useMemo(() => {
-        return orders.find( o => o._id === id );
-    }, [ orders, id ])
+	const order = useMemo(() => {
+		return orders.find( o => o._id === id );
+	}, [ orders, id ])
 
-    return order ? (
-        <div 
-            className={cl["root"]}
-        >
-            <OrderInfo order={order} />
-        </div>
-    ) : (
-        <Loader />
-    )
+	return order || id ? (
+		<div 
+			className={cl["root"]}
+		>
+			<OrderInfo order={order} />
+		</div>
+	) : (
+		<Loader />
+	)
 }

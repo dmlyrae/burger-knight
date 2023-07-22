@@ -26,7 +26,7 @@ const AppHeader = () => {
 				<NavLink 
 					to={'/feed'}
 					className={ () => {
-						return `${AppHeaderStyles.link} p-4 ${location.pathname === '/history' ? AppHeaderStyles.link_active : ''}`
+						return `${AppHeaderStyles.link} p-4 ${location.pathname.startsWith(`/feed`) ? AppHeaderStyles.link_active : ''}`
 					} }
 				>
 					<ListIcon type={"secondary"}></ListIcon>

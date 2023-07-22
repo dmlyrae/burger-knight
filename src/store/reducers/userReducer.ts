@@ -1,5 +1,5 @@
 import { act } from "react-dom/test-utils"
-import { userActionsTypes } from "../actions/userActions"
+import { TUserReducerActions, userActionsTypes } from "../actions/userActions"
 import { PayloadAction } from "@reduxjs/toolkit"
 import { Without } from "../../types/commonTypes"
 
@@ -73,7 +73,7 @@ const initialState:TInitialState = {
 	restorePasswordError: ''
 }
 
-export const userReducer = (state = initialState, action:PayloadAction<any>):TInitialState => {
+export const userReducer = (state = initialState, action:TUserReducerActions):TInitialState => {
 	switch (action.type) {
 		case userActionsTypes.USER_GET_REQUEST: {
 			return {

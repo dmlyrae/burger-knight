@@ -9,6 +9,8 @@ import ProtectedRouteElement from "../components/ProtectedRouteElement/Protected
 import { PathRouteProps, RouteProps } from "react-router-dom"
 import Feed from "../pages/feed/Feed"
 import { FeedId } from "../pages/feedId/FeedId"
+import { OrderInfo } from "../components/OrderInfo/OrderInfo"
+import { FullPageWrapper } from "../components/FullPageWrapper/FullPageWrapper"
 
 
 export type TRouterConfig = Record<string, RouteProps>; 
@@ -75,12 +77,13 @@ export const routerConfig:TRouterConfig = {
 			/>
 	},
 	orderId: {
-		path: '/profile/orders/:authorderid',
+		path: '/profile/orders/:id',
 		element: <ProtectedRouteElement
 				element={
-					<FeedId />
+					<FullPageWrapper>
+						<OrderInfo />
+					</FullPageWrapper>
 				}
-				authProtected={true}
 			/>
 	},
 	feedId: {

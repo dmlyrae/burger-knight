@@ -2,6 +2,18 @@ import burgerApi from "../../utils/burger-api"
 import { TDispatchAction, errorMessage, typedAction } from "../../types/commonTypes"
 import { IUserRegistrationRequest, IUserRequest } from "../reducers/userReducer"
 
+export type TUser = {
+	email: string;
+	name: string;
+}
+export type TUserResponse = {
+	accessToken: string; 
+	refreshToken: string; 
+	user: TUser; 
+	message?: string;
+	success?: boolean
+};
+
 export const userActionsTypes = {
 	'USER_CHECK_SUCCESS': 'USER_CHECK_SUCCESS',
 	'REGISTRATION_REQUEST': 'REGISTRATION_REQUEST',
@@ -28,7 +40,7 @@ export const userActionsTypes = {
 	'USER_PATCH_REQUEST': 'USER_PATCH_REQUEST',
 	'USER_PATCH_SUCCESS': 'USER_PATCH_SUCCESS',
 	'USER_PATCH_ERROR': 'USER_PATCH_ERROR',
-}
+} as const;
 
 export function setUsername(username:string) {
 	return {
@@ -181,7 +193,7 @@ export const checkUserByToken:IGetUser = function(token) {
 			let data = accessToken ? await burgerApi.userGetRequest(accessToken) : {success: false};
 			if (!data?.success && refreshToken) {
 				const refreshData = await burgerApi.refreshTokenRequest(refreshToken);
-				if (!refreshData.accessToken) {
+				if (!refreshData?.accessToken) {
 					throw Error(refreshData?.message ?? 'Login error.');
 				}
 				dispatch({
@@ -259,3 +271,105 @@ export function setCode(code:string) {
 		payload: code
 	} 
 }
+
+export type TUserReducerActions = ReturnType<typeof setCode> |
+	{
+		type: typeof userActionsTypes.LOGIN_REQUEST; 
+		payload: undefined
+	} |
+	{
+		type: typeof userActionsTypes.FORGOT_PASSWORD_REQUEST; 
+		payload: undefined
+	} |
+	{
+		type: typeof userActionsTypes.REGISTRATION_REQUEST; 
+		payload: undefined
+	} |
+	{
+		type: typeof userActionsTypes.USER_PATCH_REQUEST; 
+		payload: undefined
+	} |
+	{
+		type: typeof userActionsTypes.RESTORE_PASSWORD_REQUEST; 
+		payload: undefined
+	} |
+	{
+		type: typeof userActionsTypes.USER_GET_REQUEST; 
+		payload: undefined
+	} |
+	{
+		type: typeof userActionsTypes.COMMON_USER_ERROR;
+		payload: string;
+	} |
+	{
+		type: typeof userActionsTypes.LOGIN_ERROR;
+		payload: string;
+	} |
+	{
+		type: typeof userActionsTypes.REGISTRATION_ERROR;
+		payload: string;
+	} |
+	{
+		type: typeof userActionsTypes.RESTORE_PASSWORD_ERROR;
+		payload: string;
+	} |
+	{
+		type: typeof userActionsTypes.USER_PATCH_ERROR;
+		payload: string;
+	} |
+	{
+		type: typeof userActionsTypes.USER_GET_ERROR;
+		payload: string;
+	} |
+	{
+		type: typeof userActionsTypes.FORGOT_PASSWORD_ERROR;
+		payload: string;
+	} |
+	{
+		type: typeof userActionsTypes.FORGOT_PASSWORD_SUCCESS;
+		payload: undefined;
+	} |
+	{
+		type: typeof userActionsTypes.LOGIN_SUCCESS;
+		payload: Partial<TUserResponse>,
+	} |
+	{
+		type: typeof userActionsTypes.REFRESH_TOKEN;
+		payload: Partial<TUserResponse>;
+	} |
+	{
+		type: typeof userActionsTypes.REGISTRATION_SUCCESS;
+		payload: Partial<TUserResponse>;
+	} |
+	{
+		type: typeof userActionsTypes.RESTORE_PASSWORD_SUCCESS
+		payload: Partial<TUserResponse>;
+	} |
+	{
+		type: typeof userActionsTypes.USER_PATCH_SUCCESS;
+		payload: Partial<TUserResponse>;
+	} |
+	{
+		type: typeof userActionsTypes.USER_CHECK_SUCCESS;
+		payload: Partial<TUserResponse>;
+	} |
+	{
+		type: typeof userActionsTypes.SET_CODE;
+		payload: string; 
+	} |
+	{
+		type: typeof userActionsTypes.SET_EMAIL;
+		payload: string;
+	} |
+	{
+		type: typeof userActionsTypes.SET_USERNAME;
+		payload: string;
+	} |
+	{
+		type: typeof userActionsTypes.LOGOUT;
+		payload: undefined;
+	} |
+	{
+		type: typeof userActionsTypes.USER_GET_SUCCESS;
+		payload: Partial<TUserResponse>;
+	};

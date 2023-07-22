@@ -4,10 +4,12 @@ import { CurrencyIcon } from '@ya.praktikum/react-developer-burger-ui-components
 import { v4 as uuidv4 } from 'uuid';
 import Loader from '../Loader/Loader';
 import { getTimeFromTimestamp } from '../../utils/getTime';
-import { useAppSelector } from '../../types/redux';
+import { useAppDispatch, useAppSelector } from '../../types/redux';
 import { TOrderDetails } from '../../store/reducers/orderReducer';
-import { FC } from 'react';
+import { FC, useEffect, useMemo } from 'react';
 import { IOrder } from '../../types/orders';
+import { useNavigate, useParams } from 'react-router-dom';
+import { wsActions, wsInit } from '../../store/reducers/wssOrders';
 
 interface OrderInfo {
 	order?: IOrder
@@ -17,7 +19,41 @@ export const OrderInfo:FC<OrderInfo> = function(props) {
 
 	const {  ingredients: allIngredients  } = useAppSelector( state => state.ingredients )
 	const { order: singleOrder } = useAppSelector( state => state.singleOrder)
-	const order = props?.order ?? singleOrder
+	const { orders, wsConnection } = useAppSelector( state => state.wssOrders )
+	const dispatch = useAppDispatch()
+	const { id } = useParams()
+	const navigate = useNavigate()
+
+	const order = useMemo(() => {
+		const orderInHistory = (orders ?? [])
+			.find( order => order._id === id );
+		const result = orderInHistory ?? props?.order ??  singleOrder;
+		const localOrders = JSON.parse(localStorage.getItem("__orders") ?? `[]`);
+		if (result) {
+			const newLocalOrders = localOrders
+				.filter( (order:IOrder) => order._id !== result._id)
+				.concat( result )
+				.slice(-50);
+			localStorage.setItem('__orders', JSON.stringify(newLocalOrders));
+			return result;
+		} else {
+			return localOrders.find( (order:IOrder) => order._id === id );
+		}
+	}, [id, props, singleOrder ]);
+
+	useEffect(() => {
+
+		if ( !wsConnection || !orders.length ) {
+			dispatch(wsInit());
+		}
+
+		return () => {
+			if (wsConnection) {
+				dispatch(wsActions.onClose());
+			}
+		}
+
+	}, [])
 	const isModal = !Boolean(props?.order)
 
 	const orderIngredients = getIngredients(order?.ingredients, allIngredients)

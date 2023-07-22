@@ -1,6 +1,6 @@
 import { PayloadAction } from "@reduxjs/toolkit";
 import { TCard } from "../../types/cards"
-import { singleIngredientActionsTypes } from "../actions/singleIngredientActions"
+import { TSingleIngredientActions, singleIngredientActionsTypes } from "../actions/singleIngredientActions"
 
 
 type TIngredientDetails = {
@@ -13,7 +13,7 @@ const initialState:TIngredientDetails = {
   ingredientDetailsModalWindow: false,
 }
 
-export const singleIngredientReducer = (state = initialState, action:PayloadAction<any>) => {
+export const singleIngredientReducer = (state = initialState, action:TSingleIngredientActions) => {
   switch (action.type) {
     case singleIngredientActionsTypes.SET_INGREDIENT: {
       return {
@@ -24,7 +24,7 @@ export const singleIngredientReducer = (state = initialState, action:PayloadActi
     case singleIngredientActionsTypes.INGREDIENT_TOGGLE_WINDOW: {
       if (state.ingredientDetailsModalWindow) {
         return {
-          ingredientDetails: undefined,
+          ingredientDetails: null,
           ingredientDetailsModalWindow: false,
         }
       }
@@ -36,7 +36,7 @@ export const singleIngredientReducer = (state = initialState, action:PayloadActi
     case singleIngredientActionsTypes.CLEAR_INGREDIENT: {
       return {
         ...state,
-        ingredientDetails: undefined
+        ingredientDetails: null,
       }
     }
     default: {

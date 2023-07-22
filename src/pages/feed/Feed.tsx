@@ -8,10 +8,8 @@ import { SingleOrder } from '../../components/SingleOrder/SingleOrder';
 import { useNavigate, useParams } from 'react-router-dom';
 
 const OrdersFeed = () => {
-	console.log('we are here')
 	const dispatch = useAppDispatch();
 	const { orders } = useAppSelector( state => state.wssOrders )
-	const { id } = useParams();
 
 	const safeOrders = useMemo(() => {
 		return (orders ?? []);
@@ -24,8 +22,6 @@ const OrdersFeed = () => {
 	const ordersSuccess = useMemo(() => {
 		return safeOrders.filter( order => order.status === 'done');
 	}, [safeOrders])
-
-
 
 	const { total, totalToday, wsConnection } = useAppSelector( state => state.wssOrders );
 	const { isAuth } = useAppSelector( state => state.user )
