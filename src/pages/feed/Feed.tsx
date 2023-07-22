@@ -61,6 +61,7 @@ const OrdersFeed = () => {
 							<SingleOrder 
 								navigateOnClick
 								order={order} 
+								key={order._id}
 							/>
 						))
 					}
