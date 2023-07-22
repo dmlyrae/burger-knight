@@ -16,24 +16,29 @@ export const socketMiddleware = (wsUrl: string, wssActions: ISocketActions , aut
 		const accessToken = sessionStorage.getItem('token');
 		//const refreshToken = localStorage.getItem('token');
 
-		if (type === wssActionsNames.INIT || type === wssActionsNames.AUTH_INIT) {
-			socket = accessToken ? new WebSocket(`${wsUrl}?token=${accessToken.split(' ')[1]}`) : new WebSocket(`${wsUrl}`);
-		}
+		if (type === wssActionsNames.INIT) {
+			socket = new WebSocket(`wss://norma.nomoreparties.space/orders/all`);
+		} 
+
+		if (type === wssActionsNames.AUTH_INIT && accessToken) {
+			socket = new WebSocket(`${wsUrl}?token=${accessToken.split(' ')[1]}`);
+		} 
 
 		if (socket) {
 			socket.onopen = () => {
-				dispatch(onOpen());
+				dispatch(onOpen())
+			}
+			socket.onclose = () => {
+				dispatch(onClose())
 			}
 			socket.onerror = () => {
-				dispatch(onError());
+				dispatch(onError())
 			}
 			socket.onmessage = async (event) => {
 				const { data } = event;
-				const { success, ...restParsedData } = JSON.parse(data);
+				const { success, ...restData } = JSON.parse(data);
+				//console.log('restData', restData)
 				dispatch(onMessage(JSON.parse(data)));
-			}
-			socket.onclose = () => {
-				dispatch(onClose());
 			}
 			if (type === wssActionsNames.SEND_MESSAGE) {
 				const message = accessToken ? { ...payload, token: accessToken } : { ...payload };

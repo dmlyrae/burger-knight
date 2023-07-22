@@ -21,7 +21,7 @@ interface Ingredient {
 }
 
 const Ingredient:FC<Ingredient> = (props) => {
-	const { openIngredient,card } = props;
+	const { openIngredient, card } = props;
   	const { burgerIngredients } = useAppSelector(state => state.burgerConstructor)
 	const ingredientAmount = useMemo(() => {
 		return burgerIngredients.reduce((amount:number,ingredient:TCard) => {

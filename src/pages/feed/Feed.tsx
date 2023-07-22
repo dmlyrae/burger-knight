@@ -1,130 +1,148 @@
 import cl from './Feed.module.css';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { wsInit, wsActions } from "../../store/reducers/wssOrders"
 import { IOrder } from "../../types/orders";
 import Loader from '../../components/Loader/Loader';
 import { useAppDispatch, useAppSelector } from '../../types/redux';
 import { SingleOrder } from '../../components/SingleOrder/SingleOrder';
-import { useNavigate } from 'react-router-dom';
-import { routerConfig } from '../../utils/routerConfig';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const OrdersFeed = () => {
+	console.log('we are here')
 	const dispatch = useAppDispatch();
+	const { orders } = useAppSelector( state => state.wssOrders )
+	const { id } = useParams();
 
-	const { orders } = useAppSelector((store) => store.wssOrders )
+	const safeOrders = useMemo(() => {
+		return (orders ?? []);
+	}, [orders])
 
-	const ordersSuccess = orders.filter((order) => order.status === 'done');
-	const ordersCreated = orders.filter((order) => order.status === 'created');
+	const ordersCreated = useMemo(() => {
+		return safeOrders.filter( order => order.status === 'created');
+	}, [safeOrders])
 
-	const { total, totalToday, wsConnected } = useAppSelector( store => store.wssOrders );
+	const ordersSuccess = useMemo(() => {
+		return safeOrders.filter( order => order.status === 'done');
+	}, [safeOrders])
+
+
+
+	const { total, totalToday, wsConnection } = useAppSelector( state => state.wssOrders );
 	const { isAuth } = useAppSelector( state => state.user )
+
+	const ordersSuccessDivide = useMemo(() => {
+		let result = [];
+		let localOrders = [...ordersSuccess];
+		const chunkLimit = 10;
+		while (localOrders.length > 0) {
+			result.push(localOrders.splice(0, chunkLimit));
+		}
+		return result;
+	}, [ordersSuccess])
 
 	const navigate = useNavigate();
 
-
 	useEffect(() => {
-		if (!isAuth) {
-			navigate(routerConfig.login.path ?? `/`)
-		} else {
-			dispatch(wsInit());
-		}
+		dispatch(wsInit());
 		return () => {
-			if (wsConnected) {
+			if (wsConnection) {
 				dispatch(wsActions.onClose());
 			}
 		}
 	}, []);
 
-	return (
+	return wsConnection ? (
 		<div className={cl["feed-page"]}>
 			<div className={cl["feed"]}>
 
-				<h2 className={cl.title}>
+				<h2 className={[cl.title, "text text_type_main-large pb-5"].join(" ")}>
 					{'Лента заказов'}
 				</h2>
 
-				{
-					wsConnected ?
-						(
-							<section className={cl.section}>
-
-								<ul className={cl.orderList}>
-									{orders.map( (order: IOrder) => (
-										<li key={order.number} className={cl.order}>
-											<SingleOrder order={order} status={false} />
-										</li>
-										)
-									)}
-								</ul>
-
-								<div className={cl.container}>
-									<div className={cl.orders}>
-										<div className={cl.block}>
-											<p className={cl.ordersTitle}>Ready:</p>
-											<ul className={cl.numberList}>
-												{
-													ordersSuccess.map((order) => {
-														return (<li className={cl.number} style={{ color: '#00CCCC' }} key={order.number}>{order.number}</li>)
-													})
-												}
-											</ul>
-										</div>
-										<div className={cl.block}>
-											<p className={cl.ordersTitle}>Preparing:</p>
-											<ul className={cl.numberList}>
-												{
-													ordersCreated.map((order) => {
-														return (<li className={cl.number} key={order.number}>{order.number}</li>)
-													})
-												}
-											</ul>
-										</div>
-									</div>
-									<div className={cl.summarize}>
-										<p className={cl.total}>Total burgers made:</p>
-										<p className={cl.sum}>{total}</p>
-									</div>
-									<div className={cl.summarize}>
-										<p className={cl.total}>Burgers made today:</p>
-										<p className={cl.sum}>{totalToday}</p>
-									</div>
-								</div>
-							</section>
-						)
-						: <Loader />
-				}
+				<section className={cl["feed__list"]}>
+					{
+						safeOrders.map( (order: IOrder) => (
+							<SingleOrder 
+								navigateOnClick
+								order={order} 
+							/>
+						))
+					}
+				</section>
 			</div>
 			<div className={cl["stats"]} >
 
 				<div className={cl["stats__main"]}>
 					<div className={cl["stats__ready"]}>
-						<h4>{'Готовы:'}</h4>
-						<span>034533</span>
-						<span>034533</span>
-						<span>034533</span>
-						<span>034533</span>
-						<span>034533</span>
+						<h4 className={"text text_type_main-medium mb-6"}>
+							{'Готовы:'}
+						</h4>
+						<div
+							className={cl["orders-columns__list"]}
+						>
+							{
+								ordersSuccessDivide.map( (orderArray,i) => (
+									<div
+										className={cl["order-column"]}
+										key={i}
+									>
+										{
+											orderArray.map((order) => (
+												<span 
+													className={"text text_type_main-medium"}
+													key={order.number}
+												>
+													{order.number}
+												</span>
+											))
+										}
+									</div>
+								))
+							}
+						</div>
 					</div>
 					<div className={cl["stats__in-work"]}>
-						<h4>{'В работе:'}</h4>
-						<span>034533</span>
-						<span>034533</span>
-						<span>034533</span>
-						<span>034533</span>
+						<h4 className={"text text_type_main-medium mb-6"}>
+							{'В работе:'}
+						</h4>
+						{
+							ordersCreated.map((order) => (
+								<span 
+									className={"text text_type_main-medium"}
+									key={order.number}
+								>
+									{order.number}
+								</span>
+							))
+						}
 					</div>
 				</div>
 
 				<div className={cl["stats__all-time"]}>
-					<h2>{'Выполнено за все время:'}</h2>
-					<span>28752</span>
+					<h4 className={"text text_type_main-medium mb-6"}>
+						{'Выполнено за все время:'}
+					</h4>
+					<span
+						className={[cl["huge-large"], "text text_type_main-large"].join(" ")}
+					>
+						{total}
+					</span>
 				</div>
 
 				<div className={cl["stats__today"]}>
-					<h2>{'Выполнено за сегодня:'}</h2>
-					<span>752</span>
+					<h4 className={"text text_type_main-medium mb-6"}>
+						{'Выполнено за сегодня:'}
+					</h4>
+					<span
+						className={[cl["huge-large"], "text text_type_main-large"].join(" ")}
+					>
+						{totalToday}
+					</span>
 				</div>
 			</div>
 		</div>
+	) : (
+		<Loader />
 	)
 };
 

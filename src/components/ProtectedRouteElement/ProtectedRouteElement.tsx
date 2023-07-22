@@ -1,39 +1,47 @@
-import React, { FC } from "react";
-import { Navigate, useLocation } from "react-router-dom";
+import React, { FC, useEffect } from "react";
+import { Navigate, Route, useLocation, useNavigate, useParams } from "react-router-dom";
 import { routerConfig } from "../../utils/routerConfig";
-import { useAppSelector } from "../../types/redux";
+import { useAppDispatch, useAppSelector } from "../../types/redux";
+import { checkUserByToken, refreshTokenAction } from "../../store/actions/userActions";
+import Loader from "../Loader/Loader";
 
 interface ProtectedRouteElement {
-    element: React.ReactElement; 
-    authProtected?: boolean;
+	element: React.ReactElement; 
+	authProtected?: boolean;
 }
 const ProtectedRouteElement:FC<ProtectedRouteElement> = function(props) {
-    const { element, authProtected } = props;
-    const location = useLocation();
 
-    const { accessToken } = useAppSelector( state => state.user )
-    const from = location.state?.from || routerConfig.main.path;
+	const { element, authProtected } = props;
+	const location = useLocation();
+	const dispatch = useAppDispatch();
+	const { isAuth, loginRequest, login } = useAppSelector( state => state.user)
+	const from = location.state?.from || routerConfig.main.path;
 
-    if (!authProtected && !accessToken) {
-        return (
-            <Navigate 
-                to={routerConfig.login.path ?? `/`} 
-                state={{
-                    from: location
-                }}
-            />
-        ) 
-    }
+	useEffect(() => {
+		if (loginRequest) return;
+		if (!isAuth) {
+			dispatch(checkUserByToken())
+		}
+	}, [])
 
-    if (authProtected && accessToken) {
-        return (
-            <Navigate 
-                to={from} 
-            />
-        ) 
-    }
+	if (loginRequest) {
+		return (
+			<Loader />
+		)
+	}
 
-    return element;
+	if (authProtected && !isAuth) {
+		return (
+			<Navigate 
+				to={routerConfig.login.path ?? `/`} 
+				state={{
+					from: location,
+				}}
+			/>
+		) 
+	}
+
+	return element;
 }
 
 export default ProtectedRouteElement

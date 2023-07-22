@@ -43,6 +43,13 @@ class BurgerApi {
 			.then(this.validateResponse)
 	}
 
+	checkUser = (token:string) => this.request('auth/user', {
+		method: 'GET',
+		headers: {
+			'Authorization': token,
+		},
+	})
+
 	registrationRequest = (registrationData:IUserRegistrationRequest) => this.request('auth/register', {
 		method: 'POST',
 		mode: 'cors',
@@ -83,11 +90,17 @@ class BurgerApi {
 		})
 	})
 
-	userGetRequest = (token:string) => this.request('auth/user', {
-		headers: {
-			'Authorization': token,
-		}
-	});
+	userGetRequest = (token:string) => {
+		return this.request('auth/user', {
+			method: 'GET',
+			mode: 'cors',
+			cache: 'no-cache',
+			credentials: 'same-origin',
+			headers: {
+				'Content-Type': 'appliection/json',
+				'Authorization': token,
+			}
+	})};
 
 	userPatchRequest = (patchData:IUserRequest, token:string) => this.request('auth/token', {
 		method: 'PATCH',

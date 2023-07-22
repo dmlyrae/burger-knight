@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, useEffect } from "react";
 import ProfileMenuStyles from './ProfileMenu.module.css';
 import { NavLink } from 'react-router-dom';
 import { useDispatch, useSelector } from "react-redux";
@@ -9,6 +9,7 @@ import Modal from "../Modal/Modal";
 import { singleOrderSlice } from "../../store/reducers/singleOrderReducer";
 import OrderDetails from "../OrderDetails/OrderDetails";
 import SingleOrderDetails from "../SingleOrderDetails/SingleOrderDetails";
+import { OrderInfo } from "../OrderInfo/OrderInfo";
 
 
 interface ProfileMenu {
@@ -24,6 +25,18 @@ const ProfileMenu:FC<ProfileMenu> = function(props) {
 	const closeOrderModalWindow = () => {
 		dispatch(singleOrderSlice.actions.closeOrder())
 	}
+
+	useEffect(() => {
+		if (singleOrder) {
+			document.title = singleOrder.name;
+			const id = window.history.length;
+			window.history.pushState({ id }, "", `/profile/orders/${singleOrder._id}`);
+		} else {
+			document.title = 'Order details';
+			const id = window.history.length - 1;
+			window.history.replaceState( { id }, "", `/`)
+		}
+	}, [singleOrder])
 
 	return (
 	<>
@@ -84,15 +97,12 @@ const ProfileMenu:FC<ProfileMenu> = function(props) {
 
 		{
 			singleOrder && (
-				<Modal title={'Детали ингридиента'} closeModal={closeOrderModalWindow}>
-					<SingleOrderDetails />
+				<Modal title={''} closeModal={closeOrderModalWindow}>
+					<OrderInfo />
 				</Modal>
 			)
 		}
 	</>
 )}
-
-ProfileMenu.propTypes = {
-}
 
 export default ProfileMenu;

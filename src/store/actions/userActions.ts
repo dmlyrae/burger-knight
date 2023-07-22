@@ -3,6 +3,7 @@ import { TDispatchAction, errorMessage, typedAction } from "../../types/commonTy
 import { IUserRegistrationRequest, IUserRequest } from "../reducers/userReducer"
 
 export const userActionsTypes = {
+	'USER_CHECK_SUCCESS': 'USER_CHECK_SUCCESS',
 	'REGISTRATION_REQUEST': 'REGISTRATION_REQUEST',
 	'REGISTRATION_SUCCESS': 'REGISTRATION_SUCCESS',
 	'REGISTRATION_ERROR': 'REGISTRATION_ERROR',
@@ -163,6 +164,49 @@ export const refreshTokenAction:IRefreshTokenAction = function(refreshToken) {
 			dispatch({
 				type: userActionsTypes.COMMON_USER_ERROR,
 		  		payload: errorMessage(e)
+			})
+		}
+	}
+}
+
+interface IGetUser {
+	(token?: string):TDispatchAction;
+}
+export const checkUserByToken:IGetUser = function(token) {
+	return async function (dispatch) {
+		const refreshToken = localStorage.getItem('token')
+		let accessToken = sessionStorage.getItem('token')
+		try {
+			dispatch({ type: userActionsTypes.LOGIN_REQUEST })
+			let data = accessToken ? await burgerApi.userGetRequest(accessToken) : {success: false};
+			if (!data?.success && refreshToken) {
+				const refreshData = await burgerApi.refreshTokenRequest(refreshToken);
+				if (!refreshData.accessToken) {
+					throw Error(refreshData?.message ?? 'Login error.');
+				}
+				dispatch({
+					type: userActionsTypes.REFRESH_TOKEN,
+					payload: refreshData
+				})
+				accessToken = refreshData.accessToken;
+				if (accessToken) {
+					data = await burgerApi.userGetRequest(accessToken);
+				} else {
+					throw Error('Error');
+				}
+			}
+			dispatch({
+				type: userActionsTypes.LOGIN_SUCCESS,
+				payload: {
+					...data,
+					accessToken,
+					refreshToken
+				},
+			})
+		} catch(e:unknown | Error) {
+			dispatch({
+				type: userActionsTypes.LOGIN_ERROR,
+				payload: errorMessage(e)
 			})
 		}
 	}

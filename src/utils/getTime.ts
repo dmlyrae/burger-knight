@@ -1,17 +1,29 @@
 import moment from 'moment';
 
-export const getTimeFromTimestamp = (orderTimeISO: string | undefined): string => {
-  const orderDay = moment(orderTimeISO).format('DD');
-  const orderTime = moment(orderTimeISO).format('HH:mm');
-  const todayDay = moment().format('DD');
+export const getTimeFromTimestamp = (timestamp: string | undefined): string => {
 
-  const yesterdayMessageFromOrder = moment(orderTimeISO).fromNow();
+	const momentDate = moment(timestamp);
+	const now = moment(new Date()); 
+	const isToday = momentDate.isSame(now, "day");
+	const yesterday = now.clone().subtract(1, 'days').startOf('day');
+	const isYesterday = momentDate.isSame(yesterday, 'd');
+	const weekAgo = now.clone().subtract(7, 'days').startOf('day');
+	const isWeekAgo = momentDate.isAfter(weekAgo);
 
-  if (orderDay === todayDay) {
-      return `today, ${orderTime}`;
-  } else if (yesterdayMessageFromOrder === 'days ago') {
-      return `yesterday, ${orderTime}`;
-  } else {
-      return `${yesterdayMessageFromOrder}, ${orderTime}`;
-  }
+	const time = momentDate.format('HH:mm');
+	const timeAgo = momentDate.fromNow();
+
+	if (isToday) {
+		return `сегодня, ${time}`
+	} 
+
+	if (isYesterday) {
+		return `вчера, ${time}`
+	} 
+
+	return `${timeAgo}, ${time}`
+		.replace(/^ a/, '')
+		.replace(/days/, 'дней')
+		.replace(/ago/, 'назад')
+		.replace(/month/, 'месяц(ев)')
 }
