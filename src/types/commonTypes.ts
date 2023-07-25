@@ -16,7 +16,6 @@ export const typedAction:typedAction = function(type: string, payload?: any) {
 	return { type, payload };
 }
 
-
 type errorMessage = {
 	(arg0: unknown | Error):string;
 }

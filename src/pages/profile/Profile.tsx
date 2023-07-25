@@ -1,14 +1,13 @@
 import React, { useState, useEffect, ChangeEvent, FC } from 'react';
-import PropTypes from "prop-types";
 import ProfileStyles from './Profile.module.css';
 import ProfileForm from "../../components/ProfileForm/ProfileForm";
-import OrdersHistory from "../../components/OrdersHistory/OrdersHistory";
 import OrderItemHistoryDetails from "../../components/OrderItemHistoryDetails/OrderItemHistoryDetails";
 import ProfileMenu from '../../components/ProfileMenu/ProfileMenu';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useSelector } from 'react-redux';
 import { routerConfig } from '../../utils/routerConfig';
 import { useAppSelector } from '../../types/redux';
+import AuthFeed from '../../components/AuthFeed/AuthFeed';
+import { OrderInfo } from '../../components/OrderInfo/OrderInfo';
 
 interface Profile {
 	tab: 'profile' | 'orders' | 'orderId';
@@ -16,9 +15,10 @@ interface Profile {
 }
 const Profile:FC<Profile> = function(props) {
 
+	const params = useParams();
 	const navigate = useNavigate();
-	const { tab } = props;
-	const { id } = useParams();
+	const { tab, id } = props;
+
 	const { isAuth } = useAppSelector( state => state.user )
 
 	useEffect(() => {
@@ -39,9 +39,9 @@ const Profile:FC<Profile> = function(props) {
 				) : (
 					tab === 'orders' && id ? 
 						(
-							<OrderItemHistoryDetails id={id} />
+							<OrderInfo />
 						) : (
-							<OrdersHistory />
+							<AuthFeed />
 						)
 				)
 			

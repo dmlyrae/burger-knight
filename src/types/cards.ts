@@ -1,7 +1,7 @@
 export type TCard = {
     readonly _id: string;
     readonly name: string;
-    readonly type: string;
+    readonly type: 'bun' | 'sauce' | 'main';
     readonly proteins: number;
     readonly fat: number;
     readonly carbohydrates: number;
@@ -12,6 +12,7 @@ export type TCard = {
     readonly image_large: string;
     readonly __v: number;
     readonly key: string;
+    id?: number;
 }
 
 export interface IBurgerIngredients {

@@ -1,16 +1,21 @@
-import { authRequest, 
-		logoutRequest, 
-		passwordForgotRequest, 
-		passwordRestoreRequest, 
-		refreshTokenRequest, 
-		registrationRequest, 
-		userGetRequest, 
-		userPatchRequest 
-	} from "../../utils/burger-api"
+import burgerApi from "../../utils/burger-api"
 import { TDispatchAction, errorMessage, typedAction } from "../../types/commonTypes"
 import { IUserRegistrationRequest, IUserRequest } from "../reducers/userReducer"
 
+export type TUser = {
+	email: string;
+	name: string;
+}
+export type TUserResponse = {
+	accessToken: string; 
+	refreshToken: string; 
+	user: TUser; 
+	message?: string;
+	success?: boolean
+};
+
 export const userActionsTypes = {
+	'USER_CHECK_SUCCESS': 'USER_CHECK_SUCCESS',
 	'REGISTRATION_REQUEST': 'REGISTRATION_REQUEST',
 	'REGISTRATION_SUCCESS': 'REGISTRATION_SUCCESS',
 	'REGISTRATION_ERROR': 'REGISTRATION_ERROR',
@@ -35,7 +40,7 @@ export const userActionsTypes = {
 	'USER_PATCH_REQUEST': 'USER_PATCH_REQUEST',
 	'USER_PATCH_SUCCESS': 'USER_PATCH_SUCCESS',
 	'USER_PATCH_ERROR': 'USER_PATCH_ERROR',
-}
+} as const;
 
 export function setUsername(username:string) {
 	return {
@@ -58,7 +63,7 @@ export const userGetAction:IUserGetAction = function(token:string) {
 	return async function(dispatch) {
 		try {
 			dispatch(typedAction(userActionsTypes.USER_GET_REQUEST));
-			const data = await userGetRequest(token);
+			const data = await burgerApi.userGetRequest(token);
 			dispatch({
 				type: userActionsTypes.USER_GET_SUCCESS,
 				payload: data,
@@ -100,7 +105,7 @@ export const registrationAction:IRegistrationAction = function(registrationData)
 	return async function(dispatch) {
 		try {
 			dispatch(typedAction( userActionsTypes.REGISTRATION_REQUEST));
-			const data = await registrationRequest(registrationData);
+			const data = await burgerApi.registrationRequest(registrationData);
 			dispatch({
 				type: userActionsTypes.REGISTRATION_SUCCESS,
 				payload: data,
@@ -121,7 +126,7 @@ export const passwordRestoreAction:IPasswordRestoreAction = function( password, 
 	return async function(dispatch) {
 		try {
 			dispatch(typedAction(userActionsTypes.RESTORE_PASSWORD_REQUEST));
-			const data = await passwordRestoreRequest(password, code)
+			const data = await burgerApi.passwordRestoreRequest(password, code)
 			dispatch({
 				type: userActionsTypes.RESTORE_PASSWORD_SUCCESS,
 				payload: data
@@ -143,7 +148,7 @@ export const passwordForgotAction:IPasswordForgotAction = function(email) {
 	return async function(dispatch) {
 		try {
 			dispatch(typedAction(userActionsTypes.FORGOT_PASSWORD_REQUEST))
-			const data = await passwordForgotRequest(email)
+			const data = await burgerApi.passwordForgotRequest(email)
 			dispatch(typedAction(userActionsTypes.FORGOT_PASSWORD_SUCCESS))
 		} catch (e:unknown | Error) {
 			dispatch({
@@ -162,7 +167,7 @@ export const refreshTokenAction:IRefreshTokenAction = function(refreshToken) {
 		const token = refreshToken ?? localStorage.getItem('token');
 		if (!token) return;
 		try {
-			const data = await refreshTokenRequest(token);
+			const data = await burgerApi.refreshTokenRequest(token);
 			dispatch({
 				type: userActionsTypes.REFRESH_TOKEN,
 				payload: data
@@ -176,13 +181,56 @@ export const refreshTokenAction:IRefreshTokenAction = function(refreshToken) {
 	}
 }
 
+interface IGetUser {
+	(token?: string):TDispatchAction;
+}
+export const checkUserByToken:IGetUser = function(token) {
+	return async function (dispatch) {
+		const refreshToken = localStorage.getItem('token')
+		let accessToken = sessionStorage.getItem('token')
+		try {
+			dispatch({ type: userActionsTypes.LOGIN_REQUEST })
+			let data = accessToken ? await burgerApi.userGetRequest(accessToken) : {success: false};
+			if (!data?.success && refreshToken) {
+				const refreshData = await burgerApi.refreshTokenRequest(refreshToken);
+				if (!refreshData?.accessToken) {
+					throw Error(refreshData?.message ?? 'Login error.');
+				}
+				dispatch({
+					type: userActionsTypes.REFRESH_TOKEN,
+					payload: refreshData
+				})
+				accessToken = refreshData.accessToken;
+				if (accessToken) {
+					data = await burgerApi.userGetRequest(accessToken);
+				} else {
+					throw Error('Error');
+				}
+			}
+			dispatch({
+				type: userActionsTypes.LOGIN_SUCCESS,
+				payload: {
+					...data,
+					accessToken,
+					refreshToken
+				},
+			})
+		} catch(e:unknown | Error) {
+			dispatch({
+				type: userActionsTypes.LOGIN_ERROR,
+				payload: errorMessage(e)
+			})
+		}
+	}
+}
+
 interface ILogoutAction {
 	(arg0: string): TDispatchAction;
 }
 export const logoutAction:ILogoutAction = function(refreshToken) {
   return async function(dispatch) {
 	try {
-		const data = await logoutRequest(refreshToken);
+		const data = await burgerApi.logoutRequest(refreshToken);
 		dispatch({
 			type: userActionsTypes.LOGOUT,
 			payload: data,
@@ -203,7 +251,7 @@ export const loginAction:ILoginAction = function(loginData) {
   return async function(dispatch) {
 	dispatch(typedAction(userActionsTypes.LOGIN_REQUEST ))
 	try {
-		const data = await authRequest(loginData);
+		const data = await burgerApi.authRequest(loginData);
 		dispatch({
 			type: userActionsTypes.LOGIN_SUCCESS,
 			payload: data,
@@ -223,3 +271,105 @@ export function setCode(code:string) {
 		payload: code
 	} 
 }
+
+export type TUserReducerActions = ReturnType<typeof setCode> |
+	{
+		type: typeof userActionsTypes.LOGIN_REQUEST; 
+		payload: undefined
+	} |
+	{
+		type: typeof userActionsTypes.FORGOT_PASSWORD_REQUEST; 
+		payload: undefined
+	} |
+	{
+		type: typeof userActionsTypes.REGISTRATION_REQUEST; 
+		payload: undefined
+	} |
+	{
+		type: typeof userActionsTypes.USER_PATCH_REQUEST; 
+		payload: undefined
+	} |
+	{
+		type: typeof userActionsTypes.RESTORE_PASSWORD_REQUEST; 
+		payload: undefined
+	} |
+	{
+		type: typeof userActionsTypes.USER_GET_REQUEST; 
+		payload: undefined
+	} |
+	{
+		type: typeof userActionsTypes.COMMON_USER_ERROR;
+		payload: string;
+	} |
+	{
+		type: typeof userActionsTypes.LOGIN_ERROR;
+		payload: string;
+	} |
+	{
+		type: typeof userActionsTypes.REGISTRATION_ERROR;
+		payload: string;
+	} |
+	{
+		type: typeof userActionsTypes.RESTORE_PASSWORD_ERROR;
+		payload: string;
+	} |
+	{
+		type: typeof userActionsTypes.USER_PATCH_ERROR;
+		payload: string;
+	} |
+	{
+		type: typeof userActionsTypes.USER_GET_ERROR;
+		payload: string;
+	} |
+	{
+		type: typeof userActionsTypes.FORGOT_PASSWORD_ERROR;
+		payload: string;
+	} |
+	{
+		type: typeof userActionsTypes.FORGOT_PASSWORD_SUCCESS;
+		payload: undefined;
+	} |
+	{
+		type: typeof userActionsTypes.LOGIN_SUCCESS;
+		payload: Partial<TUserResponse>,
+	} |
+	{
+		type: typeof userActionsTypes.REFRESH_TOKEN;
+		payload: Partial<TUserResponse>;
+	} |
+	{
+		type: typeof userActionsTypes.REGISTRATION_SUCCESS;
+		payload: Partial<TUserResponse>;
+	} |
+	{
+		type: typeof userActionsTypes.RESTORE_PASSWORD_SUCCESS
+		payload: Partial<TUserResponse>;
+	} |
+	{
+		type: typeof userActionsTypes.USER_PATCH_SUCCESS;
+		payload: Partial<TUserResponse>;
+	} |
+	{
+		type: typeof userActionsTypes.USER_CHECK_SUCCESS;
+		payload: Partial<TUserResponse>;
+	} |
+	{
+		type: typeof userActionsTypes.SET_CODE;
+		payload: string; 
+	} |
+	{
+		type: typeof userActionsTypes.SET_EMAIL;
+		payload: string;
+	} |
+	{
+		type: typeof userActionsTypes.SET_USERNAME;
+		payload: string;
+	} |
+	{
+		type: typeof userActionsTypes.LOGOUT;
+		payload: undefined;
+	} |
+	{
+		type: typeof userActionsTypes.USER_GET_SUCCESS;
+		payload: Partial<TUserResponse>;
+	};

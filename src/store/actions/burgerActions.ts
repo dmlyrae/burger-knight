@@ -6,7 +6,7 @@ export const burgerActionsTypes = {
     'CREATE_RANDOM_BURGER': 'CREATE_RANDOM_BURGER', 
     'CLEAR_BURGER': 'CLEAR_BURGER',
     'CHANGE_ORDER_INGREDIENTS': 'CHANGE_ORDER_INGREDIENTS', 
-}
+} as const;
 
 export function addIngredient(addedIngredient:TCard) {
   return {
@@ -44,3 +44,11 @@ export function createRandomBurger(ingredientsList:TCard[]) {
     payload: ingredientsList
   }
 } 
+
+export type burgerReducerActions = ReturnType<typeof createRandomBurger> |
+  ReturnType<typeof createRandomBurger> |
+  ReturnType<typeof clearBurger> |
+  ReturnType<typeof removeIngredientAction> |
+  ReturnType<typeof changeOrderIngredients> |
+  ReturnType<typeof addIngredient>;
+

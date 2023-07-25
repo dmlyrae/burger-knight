@@ -1,8 +1,6 @@
 import { PayloadAction } from '@reduxjs/toolkit';
 import { IBurgerIngredients, TCard } from '../../types/cards';
-import { burgerActionsTypes } from '../actions/burgerActions'
-
-
+import { burgerActionsTypes, burgerReducerActions } from '../actions/burgerActions'
 
 type getTotalPrice = {
 	(ingredients: IBurgerIngredients['cards']): number,
@@ -22,7 +20,14 @@ const initialState:IInitialState = {
 	totalPrice: 0,
 }
 
-export const burgerConstructorReducer = (state = initialState, action:PayloadAction<any>) => {
+type TBurgerConstructorTypes = keyof typeof burgerActionsTypes;
+
+interface TBurgerConstructorActions {
+	type: TBurgerConstructorTypes,
+	payload: {dragIndex:number, dropIndex:number} | number; 
+}
+
+export const burgerConstructorReducer = (state = initialState, action: burgerReducerActions) => {
 	switch (action.type) {
 		case burgerActionsTypes.CHANGE_ORDER_INGREDIENTS: {
 			const {dragIndex, dropIndex} = action.payload;
@@ -70,8 +75,8 @@ export const burgerConstructorReducer = (state = initialState, action:PayloadAct
 		}
 		case burgerActionsTypes.CREATE_RANDOM_BURGER: {
 			if (!Array.isArray(action.payload)) return state;
-			let burgerIngredients = [];
-			const {bun,sauce,main} = action.payload.reduce((result,ingredient) => {
+			let burgerIngredients:TCard[] = [];
+			const {bun,sauce,main} = action.payload.reduce((result:{bun:TCard[], sauce: TCard[], main: TCard[]},ingredient) => {
 				result[ingredient.type].push(ingredient);
 				return result
 			}, {bun:[], sauce: [], main: []})

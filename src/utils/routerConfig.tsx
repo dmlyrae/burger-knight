@@ -7,6 +7,10 @@ import ProfilePage from "../pages/profile/Profile"
 import IngredientsPage from "../pages/ingredients/Ingredients"
 import ProtectedRouteElement from "../components/ProtectedRouteElement/ProtectedRouteElement"
 import { PathRouteProps, RouteProps } from "react-router-dom"
+import Feed from "../pages/feed/Feed"
+import { FeedId } from "../pages/feedId/FeedId"
+import { OrderInfo } from "../components/OrderInfo/OrderInfo"
+import { FullPageWrapper } from "../components/FullPageWrapper/FullPageWrapper"
 
 
 export type TRouterConfig = Record<string, RouteProps>; 
@@ -22,7 +26,6 @@ export const routerConfig:TRouterConfig = {
 				element={
 					<LoginPage />
 				}
-				authProtected={true}
 			/>
 	},
 	register: {
@@ -31,7 +34,6 @@ export const routerConfig:TRouterConfig = {
 				element={
 					<RegisterPage />
 				}
-				authProtected={true}
 			/>
 	},
 	forgotPassword: {
@@ -62,6 +64,7 @@ export const routerConfig:TRouterConfig = {
 				element={
 					<ProfilePage tab={'profile'}  />
 				}
+				authProtected={true}
 			/>
 	},
 	orders: {
@@ -70,14 +73,33 @@ export const routerConfig:TRouterConfig = {
 				element={
 					<ProfilePage tab={'orders'}  />
 				}
+				authProtected={true}
 			/>
 	},
 	orderId: {
 		path: '/profile/orders/:id',
 		element: <ProtectedRouteElement
 				element={
-					<ProfilePage tab={'orderId'} />
+					<FullPageWrapper>
+						<OrderInfo />
+					</FullPageWrapper>
 				}
 			/>
-	}
+	},
+	feedId: {
+		path: '/feed/:id',
+		element: <ProtectedRouteElement
+			element={
+				<FeedId />
+			} 
+		/>
+	},
+	feed: {
+		path: '/feed',
+		element: <ProtectedRouteElement
+			element={
+				<Feed />
+			} 
+		/>
+	},
 } as const;

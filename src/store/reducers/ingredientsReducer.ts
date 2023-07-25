@@ -1,10 +1,10 @@
 import { Action, PayloadAction } from "@reduxjs/toolkit";
-import { ingredientsActionsTypes } from "../actions/ingredientsActions";
+import { TIngredientsActions, ingredientsActionsTypes } from "../actions/ingredientsActions";
 import { TCard } from "../../types/cards";
 
 interface IInitialState {
   ingredientsLoading: boolean,
-  ingredientsError: boolean,
+  ingredientsError: boolean | string,
   ingredients: TCard[],
 }
 
@@ -14,7 +14,7 @@ const initialState:IInitialState = {
   ingredients: [],
 }
 
-export const ingredientsReducer = (state:IInitialState = initialState, action:PayloadAction<any>):IInitialState => {
+export const ingredientsReducer = (state:IInitialState = initialState, action:TIngredientsActions):IInitialState => {
   switch (action.type) {
     case ingredientsActionsTypes.FETCH_INGREDIENTS_REQUEST: {
       return {

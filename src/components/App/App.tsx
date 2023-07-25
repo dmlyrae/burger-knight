@@ -13,7 +13,7 @@ import { useAppDispatch, useAppSelector } from "../../types/redux"
 function App() {
 	const dispatch = useAppDispatch()
 	const { ingredients, ingredientsError, ingredientsLoading } = useAppSelector(state => state.ingredients)
-	const { refreshToken, isAuth } = useAppSelector( state => state.user)
+	const { isAuth } = useAppSelector( state => state.user)
 
 	useEffect(() => {
 		fetchIngredients()(dispatch)

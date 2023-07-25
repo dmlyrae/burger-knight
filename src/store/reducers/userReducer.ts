@@ -1,5 +1,5 @@
 import { act } from "react-dom/test-utils"
-import { userActionsTypes } from "../actions/userActions"
+import { TUserReducerActions, userActionsTypes } from "../actions/userActions"
 import { PayloadAction } from "@reduxjs/toolkit"
 import { Without } from "../../types/commonTypes"
 
@@ -73,7 +73,7 @@ const initialState:TInitialState = {
 	restorePasswordError: ''
 }
 
-export const userReducer = (state = initialState, action:PayloadAction<any>):TInitialState => {
+export const userReducer = (state = initialState, action:TUserReducerActions):TInitialState => {
 	switch (action.type) {
 		case userActionsTypes.USER_GET_REQUEST: {
 			return {
@@ -176,7 +176,8 @@ export const userReducer = (state = initialState, action:PayloadAction<any>):TIn
 		case userActionsTypes.LOGIN_SUCCESS: {
 			const { refreshToken, accessToken, user } = action.payload as IAuthRequest;
 			if (!accessToken || !refreshToken) return state;
-			localStorage.setItem('token', refreshToken);
+			localStorage.setItem('token', refreshToken)
+			sessionStorage.setItem('token', accessToken)
 			return {
 				...state,
 				accessToken,
