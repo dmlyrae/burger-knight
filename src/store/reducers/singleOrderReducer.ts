@@ -1,10 +1,10 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IOrder } from '../../types/orders';
 
-
 type TSingleOrderReducer = {
   order: IOrder | null;
 }
+
 const initialState: TSingleOrderReducer = {
   order: null
 }
@@ -24,6 +24,6 @@ export const singleOrderSlice = createSlice({
 			}
 		}
 	}
-});
+})
 
 export default singleOrderSlice.reducer

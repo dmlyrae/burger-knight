@@ -4,7 +4,7 @@ import { Tab, CurrencyIcon, Counter } from "@ya.praktikum/react-developer-burger
 import IngredientsDetails from "../IngredientDetails/IngredientDetails"
 import { Modal } from "../Modal/Modal"
 import { useDispatch, useSelector } from "react-redux";
-import { ingredientToggleWindow, setIngredient } from "../../store/actions/singleIngredientActions";
+import { clearCurrentIngredient, ingredientToggleWindow, setIngredient } from "../../store/actions/singleIngredientActions";
 import PropTypes from 'prop-types';
 import { useDrag } from "react-dnd";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -12,8 +12,6 @@ import { routerConfig } from "../../utils/routerConfig";
 import { TCard } from "../../types/cards";
 import { useAppSelector } from "../../types/redux";
 import { RefObject } from "react";
-
-
 
 interface Ingredient {
 	card: TCard,
@@ -84,7 +82,10 @@ const IngredientsList = forwardRef<HTMLDivElement, IngredientsList>((props,ref) 
 			<h3 className={"text text_type_main-medium mb-6"}>
 				{title}
 			</h3>
-			<ul className={BurgerIngredientsStyles['ingridients-list']}>
+			<ul 
+				className={BurgerIngredientsStyles['ingridients-list']}
+				data-test={list[0]?.["type"] ?? title}
+			>
 				{list.map((card) => (
 					<Ingredient card={card} openIngredient={openIngredient} key={card._id} />
 				))}
@@ -147,12 +148,20 @@ const BurgerIngredients = function() {
 		const data = args[0];
 		if (data) {
 	  		dispatch(setIngredient(data)) 
+		} else {
+			//window.history.back()
+			dispatch(clearCurrentIngredient())
 		} 
-		dispatch(ingredientToggleWindow())
+	}
+
+	const closeModal = (e?: MouseEvent | TCard) => {
+		if (e instanceof Event) { e.stopPropagation() }
+		toggleModalDisplay()
 	}
 
 	useEffect(() => {
 		if (ingredientDetails) {
+			console.log('ingreients details', ingredientDetails)
 			document.title = ingredientDetails.name;
 			const id = window.history.length;
 			window.history.pushState({ id }, "", `/ingredients/${ingredientDetails._id}`);
@@ -240,7 +249,7 @@ const BurgerIngredients = function() {
 
 			{
 				ingredientDetailsModalWindow && (
-						<Modal title={'Детали ингридиента'} closeModal={toggleModalDisplay}>
+						<Modal title={'Детали ингридиента'} closeModal={closeModal}>
 							<IngredientsDetails />
 						</Modal>
 					)

@@ -15,7 +15,7 @@ interface IInitialState {
 	totalPrice: number;
 } 
 
-const initialState:IInitialState = {
+export const initialState:IInitialState = {
 	burgerIngredients: [],
 	totalPrice: 0,
 }
@@ -32,6 +32,7 @@ export const burgerConstructorReducer = (state = initialState, action: burgerRed
 		case burgerActionsTypes.CHANGE_ORDER_INGREDIENTS: {
 			const {dragIndex, dropIndex} = action.payload;
 			const dragElement = {...state.burgerIngredients[dragIndex]}
+			if (dragElement.type === "bun") return state;
 			const burgerIngredients = [...state.burgerIngredients];
 			burgerIngredients.splice(dragIndex, 1);
 			burgerIngredients.splice(dropIndex, 0, dragElement);

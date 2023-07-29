@@ -25,6 +25,7 @@ const ProtectedRouteElement:FC<ProtectedRouteElement> = function(props) {
 	}, [])
 
 	if (loginRequest) {
+		console.log("login request")
 		return (
 			<Loader />
 		)

@@ -70,6 +70,7 @@ function Login() {
 						errorText={'Ошибка'}
 						size={'default'}
 						extraClass={"mb-6"}
+						data-test={"email-input"}
 					/>
 					<PasswordInput
 						placeholder={"Пароль"}
@@ -77,12 +78,14 @@ function Login() {
 						value={password}
 						name={'password'}
 						extraClass={"mb-6"}
+						data-test={"pass-input"}
 					/> 
 					<Button 
 						htmlType={"submit"}
 						type={"primary"}
 						size={"medium"}
 						extraClass={[LoginStyles["registration-card__button"], "mb-28"].join(" ")}
+						data-test={"login"}
 					>
 						{"Войти"}
 					</Button>

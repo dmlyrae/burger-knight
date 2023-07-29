@@ -1,7 +1,7 @@
-import { AnyAction, MiddlewareAPI } from '@reduxjs/toolkit';
-import { wssActionsNames, wssAllUrl, wssUrl } from '../../utils/data';
-import { ISocketActions } from '../reducers/socketReducer';
-import { refreshTokenAction } from '../actions/userActions';
+import { AnyAction, MiddlewareAPI } from "@reduxjs/toolkit"
+import { wssActionsNames, wssAllUrl, wssUrl } from "../../utils/data"
+import { ISocketActions } from "../reducers/wssOrders"
+import { refreshTokenAction } from "../actions/userActions"
 
 const delay = 300;
 
@@ -47,7 +47,7 @@ export const socketMiddleware = (wssActions: ISocketActions , auth: boolean) => 
 				dispatch(onClose())
 			}
 			socket.onerror = () => {
-				dispatch(onError())
+				dispatch(onError("Connection Error"))
 			}
 			socket.onmessage = async (event) => {
 				const { data } = event;
