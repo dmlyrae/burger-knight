@@ -103,7 +103,7 @@ class BurgerApi {
 			}
 	})};
 
-	userPatchRequest = (patchData:IUserRequest, token:string) => this.request('auth/token', {
+	userPatchRequest = (patchData:IUserRequest, token:string) => this.request('/auth/user', {
 		method: 'PATCH',
 		headers: {
 			'Content-Type': 'application/json',

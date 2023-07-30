@@ -4,7 +4,6 @@
 		"prefix": "cfc",
 		"body": [
 			"import React from \"react\";",
-			"import PropTypes from \"prop-types\";",
 			"import ${TM_FILENAME_BASE}Styles from './${TM_FILENAME_BASE}.module.css';",
 			"",
 			"function ${TM_FILENAME_BASE}() {",
@@ -18,8 +17,6 @@
 			"\t\t\t",
     		"\t\t</div>",
 			")}",
-			"",
-			"${TM_FILENAME_BASE}.propTypes = PropTypes.any",
 			"",
 			"export default ${TM_FILENAME_BASE}",
 		],

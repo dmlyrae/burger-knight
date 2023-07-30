@@ -31,13 +31,14 @@ type TInitialState = {
 
 export interface IUserRequest {
 	user: {
-		email: string,
-		name: string,
+		email: string;
+		name: string;
+		password?: string;
 	}
 }
 export interface IUserRegistrationRequest {
-	email: string,
-	name: string,
+	email: string;
+	name: string;
 	password: string;
 }
 

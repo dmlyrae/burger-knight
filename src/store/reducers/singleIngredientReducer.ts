@@ -34,7 +34,6 @@ export const singleIngredientReducer = (state = initialState, action:TSingleIngr
 			}
 		}
 		case singleIngredientActionsTypes.CLEAR_INGREDIENT: {
-			console.log('clear ingredient')
 			return {
 				ingredientDetails: null,
 				ingredientDetailsModalWindow: false,

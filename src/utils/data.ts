@@ -15,6 +15,9 @@ export enum wssActionsNames {
 	SEND_AUTH_MESSAGE = 'SEND_AUTH_MESSAGE',
 }
 
+export const testUrl = "http://localhost:3000"
+export const dataTestSelector = (name:string) => `[data-test="${name}"]`;
+export const dropAreaSelector = dataTestSelector('drop-area');
 
 export const createTesUser = (username: string):TUser => ({
 	name: username,
@@ -79,7 +82,6 @@ export const createDefaultIngredient = (type: "bun" | "sauce" | "main"):TCard =>
 	"__v": 0,
 	key: ""
 })
-
 
 export const defaultBun:TCard = {
 	_id: uuid(),

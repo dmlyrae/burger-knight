@@ -83,7 +83,7 @@ export const userPatchAction:IUserPatchAction = function(patchData, token) {
 	return async function(dispatch) {
 		try {
 			dispatch(typedAction(userActionsTypes.USER_PATCH_REQUEST));
-			const data = await userPatchAction(patchData, token);
+			const data = await burgerApi.userPatchRequest(patchData, token);
 			dispatch({
 				type: userActionsTypes.USER_PATCH_SUCCESS,
 				payload: data,

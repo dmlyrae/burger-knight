@@ -39,7 +39,7 @@ const Profile:FC<Profile> = function(props) {
 				) : (
 					tab === 'orders' && id ? 
 						(
-							<OrderInfo />
+							<AuthFeed id={id} />
 						) : (
 							<AuthFeed />
 						)

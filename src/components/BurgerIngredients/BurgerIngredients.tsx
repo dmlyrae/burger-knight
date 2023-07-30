@@ -1,16 +1,13 @@
-import React, {forwardRef, createRef, useRef, useMemo, useEffect, FC, ForwardRefRenderFunction, ForwardRefExoticComponent, RefAttributes, Ref, LegacyRef, ForwardedRef, UIEventHandler} from "react";
+import React, { forwardRef, useRef, useMemo, useEffect, FC } from "react";
 import BurgerIngredientsStyles from "./BurgerIngredients.module.css"
 import { Tab, CurrencyIcon, Counter } from "@ya.praktikum/react-developer-burger-ui-components"
 import IngredientsDetails from "../IngredientDetails/IngredientDetails"
 import { Modal } from "../Modal/Modal"
-import { useDispatch, useSelector } from "react-redux";
 import { clearCurrentIngredient, ingredientToggleWindow, setIngredient } from "../../store/actions/singleIngredientActions";
-import PropTypes from 'prop-types';
 import { useDrag } from "react-dnd";
 import { useLocation, useNavigate } from "react-router-dom";
-import { routerConfig } from "../../utils/routerConfig";
 import { TCard } from "../../types/cards";
-import { useAppSelector } from "../../types/redux";
+import { useAppDispatch, useAppSelector } from "../../types/redux";
 import { RefObject } from "react";
 
 interface Ingredient {
@@ -110,7 +107,7 @@ type TIngredientsNames = keyof IIngredientsList;
 
 const BurgerIngredients = function() {
 
-	const dispatch = useDispatch()
+	const dispatch = useAppDispatch()
 	const location = useLocation()
 
 	const { ingredients } = useAppSelector(state => state.ingredients)
@@ -149,7 +146,6 @@ const BurgerIngredients = function() {
 		if (data) {
 	  		dispatch(setIngredient(data)) 
 		} else {
-			//window.history.back()
 			dispatch(clearCurrentIngredient())
 		} 
 	}
@@ -161,7 +157,6 @@ const BurgerIngredients = function() {
 
 	useEffect(() => {
 		if (ingredientDetails) {
-			console.log('ingreients details', ingredientDetails)
 			document.title = ingredientDetails.name;
 			const id = window.history.length;
 			window.history.pushState({ id }, "", `/ingredients/${ingredientDetails._id}`);

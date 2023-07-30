@@ -130,7 +130,7 @@ const BurgerConstructor:FC = function() {
 			navigate(routerConfig.login.path ?? `/`, {replace: false})
 			return;
 		}
-		sendOrderAction(burgerIngredients, accessToken)(dispatch)
+		dispatch(sendOrderAction(burgerIngredients, accessToken))
 	}
 
 	return (

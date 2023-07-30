@@ -29,9 +29,9 @@ export const SingleOrder: FC<IOrderProps> = ({ navigateOnClick, order, maxWidth 
 	const { ingredients } = useAppSelector( state => state.ingredients );
 	const { order: singleOrder } = useAppSelector( state => state.singleOrder)
 
-	const location = useLocation();
-	const dispatch = useAppDispatch();
-	const navigate = useNavigate();
+	const location = useLocation()
+	const dispatch = useAppDispatch()
+	const navigate = useNavigate()
 
 	const chosenIngredients = getIngredients(order.ingredients, ingredients)
 	const bunIngredient = chosenIngredients.find( ingredient => ingredient.type === 'bun')
@@ -43,11 +43,12 @@ export const SingleOrder: FC<IOrderProps> = ({ navigateOnClick, order, maxWidth 
 
 	const showOrderModalWindow = (e:React.MouseEvent) => {
 		e.stopPropagation()
-		if (navigateOnClick) {
-			navigate(`/feed/${order._id}`)
+		dispatch(singleOrderSlice.actions.openOrder(order))
+		/*if (navigateOnClick) {
+			//navigate(`/feed/${order._id}`)
 		} else {
 			dispatch(singleOrderSlice.actions.openOrder(order))
-		}
+		}*/
 	}
 
 	return (

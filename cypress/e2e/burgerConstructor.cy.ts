@@ -1,15 +1,15 @@
 import '@4tw/cypress-drag-drop'
+import { dropAreaSelector } from '../../src/utils/data';
 
 describe("main page", function () {
 
-
 	it("dnd, order, modal window", function () {
 
-		cy.visit('http://localhost:3000');
+		cy.visit('');
 
-		cy.get(`[data-test="bun"] li:first-child`).drag(`[data-test="drop-area"]`)
-		cy.get(`[data-test="main"] li:first-child`).drag(`[data-test="drop-area"]`)
-		cy.get(`[data-test="sauce"] li:first-child`).drag(`[data-test="drop-area"]`)
+		cy.get(`[data-test="bun"] li:first-child`).drag(dropAreaSelector)
+		cy.get(`[data-test="main"] li:first-child`).drag(dropAreaSelector)
+		cy.get(`[data-test="sauce"] li:first-child`).drag(dropAreaSelector)
 
 		cy.get(`[data-test="send-order"]`).contains('Оформить заказ').click()
 
@@ -26,7 +26,7 @@ describe("main page", function () {
 	});
 
 	it("open ingredient's modal window", function () {
-		cy.visit('http://localhost:3000');
+		cy.visit('');
 		cy.get('[data-test="bun"] li:first-child').click()
 		cy.get('[data-test="modal-close"] svg').click()
 	})

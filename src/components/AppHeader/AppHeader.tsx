@@ -1,4 +1,3 @@
-import React from "react"
 import { Routes, Route, NavLink, useLocation } from "react-router-dom"
 import AppHeaderStyles from "./Appheader.module.css"
 import {
@@ -10,7 +9,9 @@ import {
 import { routerConfig } from "../../utils/routerConfig"
 
 const AppHeader = () => {
-	const location = useLocation();
+
+	const location = useLocation()
+
   	return (
 		<header className={AppHeaderStyles.header}>
 			<ul className={AppHeaderStyles.list_links}>
@@ -21,7 +22,9 @@ const AppHeader = () => {
 					} }
 				>
 					<BurgerIcon type={"secondary"}></BurgerIcon>
-					<p className="text text_type_main-default">Конструктор</p>
+					<p className="text text_type_main-default">
+						{"Конструктор"}
+					</p>
 				</NavLink>
 				<NavLink 
 					to={'/feed'}
@@ -31,16 +34,16 @@ const AppHeader = () => {
 				>
 					<ListIcon type={"secondary"}></ListIcon>
 					<p className="text text_type_main-default">
-						Лента заказов
+						{"Лента заказов"}
 					</p>
 				</NavLink>
 			</ul>
-			<a 
+			<NavLink 
 				className={AppHeaderStyles.logo}
-				href={"/"}
+				to={"/"}
 			>
 				<Logo />
-			</a>
+			</NavLink>
 			<NavLink 
 				to={routerConfig.profile.path ?? `/`}
 				className={ (isActive) => {
@@ -48,7 +51,9 @@ const AppHeader = () => {
 				} }
 			>
 				<ProfileIcon type={"secondary"}></ProfileIcon>
-				<p className="text text_type_main-default">{'Личный кабинет'}</p>
+				<p className="text text_type_main-default">
+					{"Личный кабинет"}
+				</p>
 			</NavLink>
 		</header>
   )
