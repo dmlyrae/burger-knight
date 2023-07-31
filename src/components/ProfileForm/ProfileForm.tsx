@@ -9,7 +9,7 @@ function ProfileForm() {
 
 	const dispatch = useAppDispatch()
 	const { username, email, accessToken } = useAppSelector( state => state.user )
-	const { values, handleChange } = useForm({ newEmail: email, newUsername: username, password: "" })
+	const { values, handleChange, changeValue } = useForm({ newEmail: email, newUsername: username, password: "" })
 
 	const onSave = (event:React.FormEvent) => {
 		event.preventDefault();
@@ -29,6 +29,8 @@ function ProfileForm() {
 	}
 
 	const onCancel = () => {
+		changeValue("newEmail")(email)
+		changeValue("newUsername")(username)
 		dispatch(userPatchAction({
 			user: {
 				email,

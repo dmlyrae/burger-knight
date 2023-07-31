@@ -7,10 +7,19 @@ import {
 	ProfileIcon,
 } from "@ya.praktikum/react-developer-burger-ui-components"
 import { routerConfig } from "../../utils/routerConfig"
+import { useEffect } from "react"
 
 const AppHeader = () => {
 
 	const location = useLocation()
+	useEffect(() => {
+		const titles:Record<string,string> = {
+			feed: "Orders feed",
+			profile: "Personal",
+			default: "Burger Constructor"
+		}
+		document.title = titles[location.pathname.slice(1)] ?? titles["default"];
+	}, [location])
 
   	return (
 		<header className={AppHeaderStyles.header}>
