@@ -9,34 +9,34 @@ type socketQueue = {
 	lastRequest: number;
 	getInterval: () => number;
 }
-const socketQueue:socketQueue = {
-	lastRequest: Date.now() - delay,
-	getInterval: function() {
-		const now = Date.now();
-		const interval = delay - (now - this.lastRequest); 
-		return interval < 0 ? 0 : interval;
-	},
-}
 
-export const socketMiddleware = (wssActions: ISocketActions , auth: boolean) => {
+export const socketMiddleware = function (wssActions: ISocketActions, auth: boolean) {
 	
-	return (store: MiddlewareAPI) => {
+	const socketQueue:socketQueue = {
+		lastRequest: Date.now() - delay,
+		getInterval: function() {
+			const now = Date.now();
+			const interval = delay - (now - this.lastRequest); 
+			return interval < 0 ? 0 : interval;
+		}
+	}
 
-		let socket: WebSocket | null = null
+	let socket: WebSocket | null = null;
+
+	return function (store: MiddlewareAPI) {
 
 		return (next: (i: AnyAction) => void) => (action: AnyAction) => {
 			const { dispatch: storeDispatch } = store;
 			const { type, payload } = action;
 			const { wsInit, wsSendMessage, onOpen, onClose, onError, onMessage } = wssActions;
 
-
-			if (type === wssActionsNames.INIT) {
+			if (type === wssActionsNames.INIT && !auth) {
 				socket = new WebSocket(wssAllUrl);
 			} 
 
 			const accessToken = sessionStorage.getItem('token');
 
-			if (type === wssActionsNames.AUTH_INIT && accessToken) {
+			if (type === wssActionsNames.AUTH_INIT && accessToken && auth) {
 				socket = new WebSocket(`${wssUrl}?token=${accessToken.split(' ')[1]}`);
 			} 
 
@@ -59,7 +59,11 @@ export const socketMiddleware = (wssActions: ISocketActions , auth: boolean) => 
 							refreshTokenAction(refreshToken)(storeDispatch)
 						}
 					} else {
-						storeDispatch(onMessage(JSON.parse(data)));
+						if (auth) {
+							storeDispatch(onMessage(JSON.parse(data)))
+						} else {
+							storeDispatch(onMessage(JSON.parse(data)))
+						}
 					}
 				}
 				if (type === wssActionsNames.SEND_MESSAGE) {

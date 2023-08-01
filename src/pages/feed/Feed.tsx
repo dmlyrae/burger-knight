@@ -8,6 +8,7 @@ import { SingleOrder } from '../../components/SingleOrder/SingleOrder';
 import { singleOrderSlice } from '../../store/reducers/singleOrderReducer';
 import Modal from '../../components/Modal/Modal';
 import OrderDetails from '../../components/OrderDetails/OrderDetails';
+import { OrderInfo } from '../../components/OrderInfo/OrderInfo';
 
 const OrdersFeed = () => {
 	const dispatch = useAppDispatch();
@@ -150,7 +151,7 @@ const OrdersFeed = () => {
 		{
 			singleOrder && (
 					<Modal title={''} closeModal={closeSingleOrderWindow}>
-						<SingleOrder order={singleOrder} />
+						<OrderInfo order={singleOrder} />
 					</Modal>
 				)
 		}

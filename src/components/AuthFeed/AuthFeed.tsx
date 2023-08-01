@@ -1,6 +1,6 @@
 import cl from './AuthFeed.module.css';
 import { SingleOrder } from '../SingleOrder/SingleOrder';
-import React, { FC, useCallback, useEffect } from 'react';
+import React, { FC, useCallback, useEffect, useMemo } from 'react';
 import { wsActionsAuth, wsAuthInit } from '../../store/reducers/wssOrders';
 import Loader from '../Loader/Loader';
 import { useAppDispatch, useAppSelector } from '../../types/redux';
@@ -16,8 +16,11 @@ const AuthFeed:FC<AuthFeed> = ({id}) => {
 
 	const dispatch = useAppDispatch();
 	const { ordersAuth } = useAppSelector( state => state.wssOrders )
-	const { wsConnection, wsConnectionAuth } = useAppSelector( state => state.wssOrders )
-	const sortedOrders = [...ordersAuth]?.reverse()
+	const { wsConnection } = useAppSelector( state => state.wssOrders )
+
+	const sortedOrders = useMemo(() => {
+		return [...ordersAuth].sort((a,b) => b.number - a.number)
+	}, [ordersAuth])
 	const { order: singleOrder } = useAppSelector( state => state.singleOrder )
 
 	useEffect(() => {

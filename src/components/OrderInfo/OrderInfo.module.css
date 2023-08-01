@@ -59,6 +59,11 @@
 	width: max-content;
 	padding: 0;
 }
+.order__price_last {
+	margin-bottom: 0;
+    margin-top: 0;
+}
+
 .ingredient__name {
 	font-size: 16px;
 	line-height: 24px;

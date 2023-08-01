@@ -12,11 +12,13 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { wsActions, wsInit } from '../../store/reducers/wssOrders';
 
 interface OrderInfo {
-	order?: IOrder
+	order?: IOrder;
+	commonFeed?: boolean;
 }
 
 export const OrderInfo:FC<OrderInfo> = function(props) {
 
+	const { commonFeed } = props;
 	const {  ingredients: allIngredients  } = useAppSelector( state => state.ingredients )
 	const { order: singleOrder } = useAppSelector( state => state.singleOrder)
 	const { orders, wsConnection } = useAppSelector( state => state.wssOrders )
@@ -41,19 +43,7 @@ export const OrderInfo:FC<OrderInfo> = function(props) {
 		}
 	}, [id, props, singleOrder ]);
 
-	useEffect(() => {
 
-		if ( !wsConnection || !orders.length ) {
-			dispatch(wsInit());
-		}
-
-		return () => {
-			if (wsConnection) {
-				dispatch(wsActions.onClose());
-			}
-		}
-
-	}, [])
 	const isModal = !Boolean(props?.order)
 
 	const orderIngredients = getIngredients(order?.ingredients, allIngredients)
@@ -130,7 +120,7 @@ export const OrderInfo:FC<OrderInfo> = function(props) {
 							{getTimeFromTimestamp(order.createdAt)}
 						</p>
 						<div className={cl["order__cell"]}>
-							<p className={cl["order__price"]}>
+							<p className={[cl["order__price"], cl["order__price_last"]].join(" ")}>
 								{price}
 							</p>
 							<CurrencyIcon type="primary" />

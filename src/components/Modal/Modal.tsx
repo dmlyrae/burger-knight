@@ -34,7 +34,7 @@ export const Modal:FC<Modal> = function(props):React.ReactPortal {
 				<>
 					<ModalOverlay closeModal={closeModal} />
 					<div className={`${ModalStyles['modal-card']} p-10 pb-12`}>
-						<div className={ModalStyles['modal-card__header']}>
+						<div className={[ModalStyles['modal-card__header'], (!title ? ModalStyles["modal-card__header_empty"] : "")].join(" ")}>
 							{
 								title && (
 									<h2 className={`${ModalStyles['card-header__title']} text text_type_main-large`}>
