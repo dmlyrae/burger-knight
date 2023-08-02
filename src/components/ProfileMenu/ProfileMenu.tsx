@@ -1,16 +1,9 @@
 import React, { FC, useEffect } from "react";
 import ProfileMenuStyles from './ProfileMenu.module.css';
 import { NavLink } from 'react-router-dom';
-import { useDispatch, useSelector } from "react-redux";
 import { routerConfig } from "../../utils/routerConfig";
 import { logoutAction } from "../../store/actions/userActions";
-import { useAppSelector } from "../../types/redux";
-import Modal from "../Modal/Modal";
-import { singleOrderSlice } from "../../store/reducers/singleOrderReducer";
-import OrderDetails from "../OrderDetails/OrderDetails";
-import SingleOrderDetails from "../SingleOrderDetails/SingleOrderDetails";
-import { OrderInfo } from "../OrderInfo/OrderInfo";
-
+import { useAppDispatch, useAppSelector } from "../../types/redux";
 
 interface ProfileMenu {
 	tab: 'profile' | 'orders' | 'orderId'
@@ -19,24 +12,7 @@ const ProfileMenu:FC<ProfileMenu> = function(props) {
 
 	const { tab } = props;
 	const { refreshToken } = useAppSelector( state => state.user );
-	const { order: singleOrder } = useAppSelector( state => state.singleOrder );
-	const dispatch = useDispatch();
-
-	const closeOrderModalWindow = () => {
-		dispatch(singleOrderSlice.actions.closeOrder())
-	}
-
-	useEffect(() => {
-		if (singleOrder) {
-			document.title = singleOrder.name;
-			const id = window.history.length;
-			window.history.pushState({ id }, "", `/profile/orders/${singleOrder._id}`);
-		} else {
-			document.title = 'Order details';
-			const id = window.history.length - 1;
-			window.history.replaceState( { id }, "", `/`)
-		}
-	}, [singleOrder])
+	const dispatch = useAppDispatch();
 
 	return (
 	<>
@@ -75,7 +51,7 @@ const ProfileMenu:FC<ProfileMenu> = function(props) {
 				<NavLink
 					onClick={() => {
 						if (refreshToken) {
-							logoutAction(refreshToken)(dispatch)
+							dispatch(logoutAction(refreshToken))
 						}
 					}}
 					to={routerConfig.login.path ?? `/`}
@@ -95,13 +71,6 @@ const ProfileMenu:FC<ProfileMenu> = function(props) {
 			</p> 
 		</div>
 
-		{
-			singleOrder && (
-				<Modal title={''} closeModal={closeOrderModalWindow}>
-					<OrderInfo />
-				</Modal>
-			)
-		}
 	</>
 )}
 

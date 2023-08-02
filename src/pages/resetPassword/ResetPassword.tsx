@@ -1,10 +1,8 @@
-import React, { useEffect, useState } from "react";
-import PropTypes from "prop-types";
+import { useEffect, useState } from "react";
 import ResetPasswordStyles from './ResetPassword.module.css';
 import { Link, useNavigate } from "react-router-dom";
 import { Button, Input, PasswordInput } from "@ya.praktikum/react-developer-burger-ui-components";
 import { routerConfig } from "../../utils/routerConfig";
-import { useDispatch, useSelector } from "react-redux";
 import Loader from "../../components/Loader/Loader";
 import { passwordRestoreAction, setCode } from "../../store/actions/userActions";
 import { useAppDispatch, useAppSelector } from "../../types/redux";
@@ -23,7 +21,7 @@ function ResetPassword() {
 	}
 	const resetPasswordSubmit = (event:React.FormEvent) => {
 		event.preventDefault();
-		passwordRestoreAction(password,code)(dispatch)
+		dispatch(passwordRestoreAction(password,code))
 	}
 
 	const { passwordRestoreRequest, code, passwordRestoreStep } = useAppSelector( state => state.user)

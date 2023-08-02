@@ -1,34 +1,28 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import LoginStyles from './Login.module.css';
 import { Input, Button, PasswordInput } from "@ya.praktikum/react-developer-burger-ui-components";
 import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
 import { loginAction, setEmail } from "../../store/actions/userActions";
 import { routerConfig } from "../../utils/routerConfig";
-import { useAppSelector } from "../../types/redux";
+import { useAppDispatch, useAppSelector } from "../../types/redux";
+import { useForm } from "../../hooks/useForm";
 
 function Login() {
 	const navigate = useNavigate();
-	const dispatch = useDispatch();
-	const [password, setPassword] = useState('');
+	const dispatch = useAppDispatch();
+
 	const { email, isAuth, accessToken } = useAppSelector( state => state.user);
-
-	const onPasswordChange = (e:React.ChangeEvent<HTMLInputElement>) => {
-		const password = e.target.value;
-		setPassword(password)
-	}
-
-	const onEmailChange = (e:React.ChangeEvent<HTMLInputElement>) => {
-		if (e.target.value) dispatch(setEmail(e.target.value));
-	}
+	const { values, handleChange } = useForm({ email, })
 
 	const authSubmit = (e:React.FormEvent) => {
 		e.preventDefault();
+		const { email, password } = values;
 		if (email && password) {
-			loginAction({
+			dispatch(setEmail(email))
+			dispatch(loginAction({
 				email,
 				password
-			})(dispatch)
+			}))
 		}
 	}
 
@@ -63,26 +57,29 @@ function Login() {
 					<Input
 						type={'text'}
 						placeholder={'E-mail'}
-						onChange={onEmailChange}
-						value={email}
-						name={'name'}
+						onChange={handleChange}
+						value={values.email ?? ""}
+						name={'email'}
 						error={false}
 						errorText={'Ошибка'}
 						size={'default'}
 						extraClass={"mb-6"}
+						data-test={"email-input"}
 					/>
 					<PasswordInput
 						placeholder={"Пароль"}
-						onChange={onPasswordChange}
-						value={password}
+						onChange={handleChange}
+						value={values.password ?? ""}
 						name={'password'}
 						extraClass={"mb-6"}
+						data-test={"pass-input"}
 					/> 
 					<Button 
 						htmlType={"submit"}
 						type={"primary"}
 						size={"medium"}
 						extraClass={[LoginStyles["registration-card__button"], "mb-28"].join(" ")}
+						data-test={"login"}
 					>
 						{"Войти"}
 					</Button>

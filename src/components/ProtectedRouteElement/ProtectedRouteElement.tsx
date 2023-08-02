@@ -14,7 +14,7 @@ const ProtectedRouteElement:FC<ProtectedRouteElement> = function(props) {
 	const { element, authProtected } = props;
 	const location = useLocation();
 	const dispatch = useAppDispatch();
-	const { isAuth, loginRequest, login } = useAppSelector( state => state.user)
+	const { isAuth, loginRequest } = useAppSelector( state => state.user)
 	const from = location.state?.from || routerConfig.main.path;
 
 	useEffect(() => {
@@ -37,6 +37,14 @@ const ProtectedRouteElement:FC<ProtectedRouteElement> = function(props) {
 				state={{
 					from: location,
 				}}
+			/>
+		) 
+	}
+
+	if (isAuth && location.state) {
+		return (
+			<Navigate 
+				to={from} 
 			/>
 		) 
 	}

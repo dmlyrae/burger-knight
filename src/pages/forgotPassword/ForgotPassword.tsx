@@ -1,20 +1,18 @@
 import React, { useEffect, useState } from "react";
-import PropTypes from "prop-types";
 import ForgotPasswordStyles from './ForgotPassword.module.css';
 import { routerConfig } from "../../utils/routerConfig";
-import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { Button, EmailInput } from "@ya.praktikum/react-developer-burger-ui-components";
 import { passwordForgotAction, setEmail } from "../../store/actions/userActions";
-import { useAppSelector } from "../../types/redux";
+import { useAppDispatch, useAppSelector } from "../../types/redux";
 
 function ForgotPassword() {
-	const dispatch = useDispatch();
-	const navigate = useNavigate();
+	const dispatch = useAppDispatch()
+	const navigate = useNavigate()
 	const { passwordRestoreStep, email } = useAppSelector( state => state.user )
 	const passwordRestore = (event:React.FormEvent) => {
 		event.preventDefault();
-		passwordForgotAction(email)(dispatch)
+		dispatch(passwordForgotAction(email))
 	}
 	const onEmailChange = (event:React.ChangeEvent<HTMLInputElement>) => {
 		dispatch(setEmail(event.currentTarget.value));

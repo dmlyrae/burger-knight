@@ -1,6 +1,4 @@
-import React, { useEffect } from "react";
 import IngredientsStyles from './Ingredients.module.css';
-import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import IngredientsDetails from "../../components/IngredientDetails/IngredientDetails";
 import Error from "../error/Error";

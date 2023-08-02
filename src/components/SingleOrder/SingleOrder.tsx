@@ -3,7 +3,6 @@ import cl from './SingleOrder.module.css';
 import { v4 as uuid } from 'uuid';
 import { getPrice, getIngredients } from '../../utils/ingredients';
 import { maxIngredientsInList } from '../../utils/data';
-import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { getTimeFromTimestamp } from '../../utils/getTime';
 import { TCard } from '../../types/cards';
 import { IOrder } from '../../types/orders';
@@ -29,9 +28,7 @@ export const SingleOrder: FC<IOrderProps> = ({ navigateOnClick, order, maxWidth 
 	const { ingredients } = useAppSelector( state => state.ingredients );
 	const { order: singleOrder } = useAppSelector( state => state.singleOrder)
 
-	const location = useLocation();
-	const dispatch = useAppDispatch();
-	const navigate = useNavigate();
+	const dispatch = useAppDispatch()
 
 	const chosenIngredients = getIngredients(order.ingredients, ingredients)
 	const bunIngredient = chosenIngredients.find( ingredient => ingredient.type === 'bun')
@@ -43,10 +40,15 @@ export const SingleOrder: FC<IOrderProps> = ({ navigateOnClick, order, maxWidth 
 
 	const showOrderModalWindow = (e:React.MouseEvent) => {
 		e.stopPropagation()
-		if (navigateOnClick) {
-			navigate(`/feed/${order._id}`)
-		} else {
+		if (!singleOrder) {
+			document.title = order.name;
+			const id = window.history.length;
+			window.history.pushState({ id }, "", `/feed/${order._id}`);
 			dispatch(singleOrderSlice.actions.openOrder(order))
+		} else {
+			document.title = 'Orders feed';
+			const id = window.history.length - 1;
+			window.history.replaceState( { id }, "", `/`)
 		}
 	}
 

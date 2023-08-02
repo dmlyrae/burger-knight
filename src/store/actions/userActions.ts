@@ -15,7 +15,6 @@ export type TUserResponse = {
 };
 
 export const userActionsTypes = {
-	'USER_CHECK_SUCCESS': 'USER_CHECK_SUCCESS',
 	'REGISTRATION_REQUEST': 'REGISTRATION_REQUEST',
 	'REGISTRATION_SUCCESS': 'REGISTRATION_SUCCESS',
 	'REGISTRATION_ERROR': 'REGISTRATION_ERROR',
@@ -84,7 +83,7 @@ export const userPatchAction:IUserPatchAction = function(patchData, token) {
 	return async function(dispatch) {
 		try {
 			dispatch(typedAction(userActionsTypes.USER_PATCH_REQUEST));
-			const data = await userPatchAction(patchData, token);
+			const data = await burgerApi.userPatchRequest(patchData, token);
 			dispatch({
 				type: userActionsTypes.USER_PATCH_SUCCESS,
 				payload: data,
@@ -347,10 +346,6 @@ export type TUserReducerActions = ReturnType<typeof setCode> |
 	} |
 	{
 		type: typeof userActionsTypes.USER_PATCH_SUCCESS;
-		payload: Partial<TUserResponse>;
-	} |
-	{
-		type: typeof userActionsTypes.USER_CHECK_SUCCESS;
 		payload: Partial<TUserResponse>;
 	} |
 	{

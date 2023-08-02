@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
-import PropTypes from "prop-types";
 import RegisterStyles from './Register.module.css';
 import { Link, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
 import { registrationAction, setEmail, setUsername } from "../../store/actions/userActions";
 import { routerConfig } from "../../utils/routerConfig";
 import { Button, EmailInput, Input, PasswordInput } from "@ya.praktikum/react-developer-burger-ui-components";
@@ -25,11 +23,11 @@ function Register() {
 	const registrationSubmit = (event:React.FormEvent) => {
 		event.preventDefault();
 		if (password && email && username) {
-			registrationAction({
+			dispatch(registrationAction({
 				name: username,
 				email,
 				password
-			})(dispatch);
+			}));
 		}
 	}
 

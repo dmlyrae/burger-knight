@@ -1,5 +1,4 @@
 import React, { FC } from "react"
-import PropTypes from "prop-types"
 import ErrorStyles from "./Error.module.css"
 
 interface Error {
@@ -13,10 +12,6 @@ const Error:FC<Error> = function({ errorMessage }) {
         {errorMessage}
     </div>
   )
-}
-
-Error.propTypes = {
-    errorMessage: PropTypes.string
 }
 
 export default Error;

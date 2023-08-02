@@ -12,8 +12,9 @@ const rootModal = document.getElementById("root-modal") as HTMLDivElement;
 interface Modal {
 	title: string;
 	closeModal: {
-		(data:TCard): void,
-		(): void,
+		(e: MouseEvent): void;
+		(data:TCard): void;
+		(): void;
 	}
 	children: React.ReactNode,
 }
@@ -43,6 +44,7 @@ export const Modal:FC<Modal> = function(props):React.ReactPortal {
 							}
 							<div 
 								className={[ModalStyles['card-header__close-button'], (title ? "": ModalStyles["empty-header"])].join(" ")}
+								data-test={"modal-close"}
 							>
 								<CloseIcon 
 									type={"secondary"} 

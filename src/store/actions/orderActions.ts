@@ -1,9 +1,8 @@
-import { Action, ActionCreator } from "redux";
 import { TCard } from "../../types/cards";
 import { TDispatchAction, errorMessage, typedAction } from "../../types/commonTypes";
 import burgerApi from "../../utils/burger-api";
 import { burgerActionsTypes } from "./burgerActions";
-import { ActionCreatorWithOptionalPayload, ActionCreatorWithoutPayload, PayloadAction, PayloadActionCreator } from "@reduxjs/toolkit";
+import { PayloadAction } from "@reduxjs/toolkit";
 import { TOrderDetails } from "../reducers/orderReducer";
 
 export const orderActionsTypes = {

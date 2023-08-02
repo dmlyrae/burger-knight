@@ -12,7 +12,6 @@ export const ingredientsActionsTypes = {
 interface IFetchIngredients {
 	(): (dispatch: AppDispatch) => Promise<void>
 }
-
 export const fetchIngredients:IFetchIngredients = function() {
 	return async function(dispatch:AppDispatch) {
 		dispatch(typedAction( ingredientsActionsTypes.FETCH_INGREDIENTS_REQUEST ))

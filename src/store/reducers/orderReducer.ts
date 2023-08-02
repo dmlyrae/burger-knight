@@ -1,6 +1,4 @@
-import { PayloadAction } from "@reduxjs/toolkit"
 import { TOrderActions, orderActionsTypes } from "../actions/orderActions"
-import { TCard } from "../../types/cards";
 import { IOrder } from "../../types/orders";
 
 type TInitialState = {
@@ -15,7 +13,7 @@ export type TOrderDetails = {
 	order: IOrder;
 }
 
-const initialState:TInitialState = {
+export const initialState:TInitialState = {
 	orderSend: false,
 	orderSendError: false,
 	orderDetails: {

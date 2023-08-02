@@ -125,12 +125,12 @@ const BurgerConstructor:FC = function() {
 	}
 
 	const sendOrder = () => {
+		if (!bun) return;
 		if (!accessToken) {
-			navigate(routerConfig.login.path ?? `/`)
+			navigate(routerConfig.login.path ?? `/`, {replace: false})
 			return;
 		}
-		if (!bun) return;
-		sendOrderAction(burgerIngredients, accessToken)(dispatch)
+		dispatch(sendOrderAction(burgerIngredients, accessToken))
 	}
 
 	return (
@@ -155,6 +155,7 @@ const BurgerConstructor:FC = function() {
 
 			<ul 
 				className={BurgerConstructorStyles["ingridients__list"]}
+				data-test={"drop-area"}
 				ref={dropAreaRef}
 			>
 				{innerIngredients.map((item:TCard,i:number) => (
@@ -200,6 +201,7 @@ const BurgerConstructor:FC = function() {
 						style={{
 							opacity: bun ? 1 : 0.5,
 						}}
+						data-test={"send-order"}
 					>
 						{bun ? 'Оформить заказ' : 'Добавьте булку'}
 					</Button>

@@ -5,11 +5,14 @@ import { IOrder } from "../../types/orders";
 import Loader from '../../components/Loader/Loader';
 import { useAppDispatch, useAppSelector } from '../../types/redux';
 import { SingleOrder } from '../../components/SingleOrder/SingleOrder';
-import { useNavigate, useParams } from 'react-router-dom';
+import { singleOrderSlice } from '../../store/reducers/singleOrderReducer';
+import Modal from '../../components/Modal/Modal';
+import OrderDetails from '../../components/OrderDetails/OrderDetails';
 
 const OrdersFeed = () => {
 	const dispatch = useAppDispatch();
 	const { orders } = useAppSelector( state => state.wssOrders )
+	const { order: singleOrder } = useAppSelector( state => state.singleOrder )
 
 	const safeOrders = useMemo(() => {
 		return (orders ?? []);
@@ -24,7 +27,6 @@ const OrdersFeed = () => {
 	}, [safeOrders])
 
 	const { total, totalToday, wsConnection } = useAppSelector( state => state.wssOrders );
-	const { isAuth } = useAppSelector( state => state.user )
 
 	const ordersSuccessDivide = useMemo(() => {
 		let result = [];
@@ -36,8 +38,6 @@ const OrdersFeed = () => {
 		return result;
 	}, [ordersSuccess])
 
-	const navigate = useNavigate();
-
 	useEffect(() => {
 		dispatch(wsInit());
 		return () => {
@@ -45,15 +45,23 @@ const OrdersFeed = () => {
 				dispatch(wsActions.onClose());
 			}
 		}
-	}, []);
+	}, [])
+
+	const closeSingleOrderWindow = () => {
+		document.title = 'Orders feed';
+		const id = window.history.length - 1;
+		window.history.replaceState( { id }, "", `/`)
+		dispatch(singleOrderSlice.actions.closeOrder())
+	}
 
 	return wsConnection ? (
+	<>
+		<h2 className={[cl["title"], "text text_type_main-large"].join(" ")}>
+			{'Лента заказов'}
+		</h2>
 		<div className={cl["feed-page"]}>
 			<div className={cl["feed"]}>
 
-				<h2 className={[cl.title, "text text_type_main-large pb-5"].join(" ")}>
-					{'Лента заказов'}
-				</h2>
 
 				<section className={cl["feed__list"]}>
 					{
@@ -138,6 +146,16 @@ const OrdersFeed = () => {
 				</div>
 			</div>
 		</div>
+
+		{
+			singleOrder && (
+					<Modal title={''} closeModal={closeSingleOrderWindow}>
+						<SingleOrder order={singleOrder} />
+					</Modal>
+				)
+		}
+
+	</>
 	) : (
 		<Loader />
 	)

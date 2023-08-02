@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Плюс и минус в счетчике работают без ошибок 1`] = `
+<div>
+  <div>
+    <p
+      data-testid="count"
+    >
+      0
+    </p>
+    <button
+      data-testid="decrement"
+      type="button"
+    >
+      -
+    </button>
+    <button
+      data-testid="increment"
+      type="button"
+    >
+      +
+    </button>
+  </div>
+</div>
+`;

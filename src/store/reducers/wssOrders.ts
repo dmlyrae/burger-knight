@@ -10,6 +10,7 @@ export type TSockets = {
 	ordersAuth: Array<IOrder>;
 	total: number | null;
 	totalToday: number | null;
+	errorMessage: string;
 }
 
 export type TMessage = {
@@ -25,6 +26,7 @@ export const initialState: TSockets = {
 	total: null,
 	totalToday: null,
 	wsConnectionAuth: false,
+	errorMessage: "",
 }
 
 export const wsInit = createAction(wssActionsNames.INIT)
@@ -41,7 +43,8 @@ const wssOrdersSlice = createSlice({
 			state.wsConnection = true;
 		},
 
-		wsConnectionError: (state: TSockets) => {
+		wsConnectionError: (state: TSockets, action: PayloadAction<string>) => {
+			if (action.payload) state.errorMessage = action.payload;
 			state.wsConnection = false;
 		},
 
@@ -51,7 +54,6 @@ const wssOrdersSlice = createSlice({
 
 		wsMessage: (state: TSockets, action: PayloadAction<TMessage>) => {
 			const { total, totalToday, orders } = action.payload;
-			//console.log('wsGetMessage', action.payload)
 			state.total = total;
 			state.totalToday = totalToday;
 			state.orders = orders;
@@ -61,7 +63,8 @@ const wssOrdersSlice = createSlice({
 			state.wsConnectionAuth = true;
 		},
 
-		wsConnectionErrorAuth: (state: TSockets) => {
+		wsConnectionErrorAuth: (state: TSockets, action: PayloadAction<string>) => {
+			if (action.payload) state.errorMessage = action.payload;
 			state.wsConnectionAuth = false;
 		},
 
@@ -71,6 +74,7 @@ const wssOrdersSlice = createSlice({
 
 		wsMessageAuth: (state: TSockets, action: PayloadAction<TMessage>) => {
 			const { orders } = action.payload;
+			state.errorMessage = "";
 			state.ordersAuth = orders;
 		},
 
@@ -79,12 +83,14 @@ const wssOrdersSlice = createSlice({
 
 export default wssOrdersSlice.reducer;
 
+export type TWSActionsTypes = typeof wssOrdersSlice.actions;
+
 export interface ISocketActions {
 	wsInit: ActionCreatorWithoutPayload<string>;
 	wsSendMessage: ActionCreatorWithPayload<string, string>;
 	onOpen: ActionCreatorWithoutPayload<string>;
 	onClose: ActionCreatorWithoutPayload<string>;
-	onError: ActionCreatorWithoutPayload<string>;
+	onError: ActionCreatorWithPayload<string>;
 	onMessage: ActionCreatorWithPayload<any, string>;
 }
 

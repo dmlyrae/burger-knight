@@ -31,13 +31,14 @@ type TInitialState = {
 
 export interface IUserRequest {
 	user: {
-		email: string,
-		name: string,
+		email: string;
+		name: string;
+		password?: string;
 	}
 }
 export interface IUserRegistrationRequest {
-	email: string,
-	name: string,
+	email: string;
+	name: string;
 	password: string;
 }
 
@@ -47,7 +48,7 @@ export interface IAuthRequest extends IUserRequest {
 }
 export type TRefreshRequest = Without<IUserRequest, IAuthRequest>;
 
-const initialState:TInitialState = {
+export const initialState:TInitialState = {
 	accessToken: '',
 	refreshToken: '',
 	code: '',
@@ -83,6 +84,7 @@ export const userReducer = (state = initialState, action:TUserReducerActions):TI
 		}
 		case userActionsTypes.USER_GET_SUCCESS: {
 			const { user } = action.payload as IUserRequest;
+			if (!user) return {...state, userGetRequest: false};
 			return {
 				...state,
 				userGetRequest: false,
@@ -171,11 +173,15 @@ export const userReducer = (state = initialState, action:TUserReducerActions):TI
 		case userActionsTypes.LOGIN_REQUEST: {
 			return {
 				...state,
+				loginRequest: true,
 			} 
 		}
 		case userActionsTypes.LOGIN_SUCCESS: {
 			const { refreshToken, accessToken, user } = action.payload as IAuthRequest;
-			if (!accessToken || !refreshToken) return state;
+			if (!accessToken || !refreshToken) return {
+				...state,
+				loginRequest: false
+			};
 			localStorage.setItem('token', refreshToken)
 			sessionStorage.setItem('token', accessToken)
 			return {
@@ -255,6 +261,12 @@ export const userReducer = (state = initialState, action:TUserReducerActions):TI
 			return {
 				...state,
 				code: action.payload,
+			}
+		}
+		case userActionsTypes.COMMON_USER_ERROR: {
+			return {
+				...state, 
+				error: action.payload, 
 			}
 		}
 		default: {
